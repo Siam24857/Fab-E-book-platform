@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 const GENRES = [
   "All Genres", "Fiction", "Mystery", "Romance",
@@ -18,6 +19,7 @@ const SORT_OPTIONS = [
 const ITEMS_PER_PAGE = 12;
 
 export default function BookStore({ BOOKS }) {
+  
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -146,7 +148,6 @@ export default function BookStore({ BOOKS }) {
   };
 
   return (
-    // FIX: Remove all minHeight and let it flow naturally
     <div style={{ fontFamily: "'Inter', sans-serif", background: "#fff", color: "#111", flex: 1 }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -198,7 +199,7 @@ export default function BookStore({ BOOKS }) {
         </select>
       </div>
 
-      {/* Body - FIX: Remove minHeight, use flex */}
+      {/* Body */}
       <div className="bookstore-body">
         {/* Sidebar */}
         <aside style={{ width: 220, borderRight: "1px solid #e5e5e5", padding: "24px 0", flexShrink: 0 }}>
@@ -266,34 +267,36 @@ export default function BookStore({ BOOKS }) {
             </div>
           ) : (
             <>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 24 }}>
+             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 24 }}>
                 {paginatedBooks.map((book) => (
-                  <div
-                    key={book._id || book.id}
-                    className="book-card"
-                    style={{ cursor: "pointer", borderRadius: 4, overflow: "hidden", transition: "box-shadow 0.2s" }}
-                  >
-                    <div style={{ overflow: "hidden", aspectRatio: "3/4", background: "#f0f0f0" }}>
-                      <img
-                        src={book.cover}
-                        alt={book.title}
-                        className="book-img"
-                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.3s ease" }}
-                      />
-                    </div>
-                    <div style={{ paddingTop: 10 }}>
-                      <p style={{ fontSize: 11, color: "#999", marginBottom: 2 }}>{book.writer}</p>
-                      <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, lineHeight: 1.3 }}>{book.title}</p>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <span style={{ fontSize: 14, fontWeight: 700 }}>${book.price.toFixed(2)}</span>
-                        <span style={{ fontSize: 11, fontWeight: 500, background: "#f3f3f3", border: "1px solid #e0e0e0", borderRadius: 4, padding: "2px 8px", color: "#444" }}>
-                          {book.genre}
-                        </span>
+                  <Link key={book._id || book.id} href={`/bookdeattailspage/${book._id || book.id}`}>
+                    <div
+                      className="book-card"
+                      style={{ cursor: "pointer", borderRadius: 4, overflow: "hidden", transition: "box-shadow 0.2s" }}
+                    >
+                      <div style={{ overflow: "hidden", aspectRatio: "3/4", background: "#f0f0f0" }}>
+                        <img
+                          src={book.cover}
+                          alt={book.title}
+                          className="book-img"
+                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.3s ease" }}
+                        />
+                      </div>
+                      <div style={{ paddingTop: 10 }}>
+                        <p style={{ fontSize: 11, color: "#999", marginBottom: 2 }}>{book.writer}</p>
+                        <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, lineHeight: 1.3 }}>{book.title}</p>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                          <span style={{ fontSize: 14, fontWeight: 700 }}>${book.price.toFixed(2)}</span>
+                          <span style={{ fontSize: 11, fontWeight: 500, background: "#f3f3f3", border: "1px solid #e0e0e0", borderRadius: 4, padding: "2px 8px", color: "#444" }}>
+                            {book.genre}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
+            
               
               {/* Pagination */}
               {totalPages > 1 && (

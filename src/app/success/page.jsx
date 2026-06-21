@@ -1,0 +1,184 @@
+import { redirect } from 'next/navigation'
+import { stripe } from '../lib/stripe'
+import Link from 'next/link'
+import { CheckCircle, Mail, ShoppingBag, ArrowLeft } from 'lucide-react'
+import { Booupdatehistory } from '../lib/Action/Historybooks'
+ 
+
+export default async function Success({ searchParams }) {
+  const { session_id } = await searchParams
+
+  if (!session_id) {
+    throw new Error('Please provide a valid session_id (`cs_test_...`)')
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(session_id, {
+      expand: ['line_items', 'payment_intent']
+    })
+
+    const {
+      status,
+      customer_details
+    } = session
+    
+    const customerEmail = customer_details?.email || 'your email'
+
+    if (status === 'open') {
+      return redirect('/')
+    }
+
+    // ✅ Define userId and productId at the outer scope
+    let userId = session.metadata?.userId
+    let productId = session.metadata?.productId
+    let coverimg = session.metadata?.coverimg
+    let booktitle = session.metadata?.booktitle
+
+    if (status === 'complete') {
+      // Validate and save history
+      if (!userId || !productId) {
+        console.warn('Missing userId or productId in session metadata:', {
+          userId,
+          productId,
+          session_id
+        })
+      }
+
+      if (userId && productId) {
+        const historydata = {
+          userId: userId,
+          productId: productId,
+          email: customerEmail,
+          sessionId: session_id,
+          paymentIntentId: session.payment_intent?.id,
+          amount: session.amount_total ? session.amount_total / 100 : null,
+          currency: session.currency,
+          timestamp: new Date(),
+          coverimg: coverimg,
+          booktitle: booktitle
+        }
+
+        try {
+          const savedHistory = await Booupdatehistory(historydata)
+          console.log('History saved successfully:', savedHistory)
+        } catch (dbError) {
+          console.error('Failed to save purchase history:', dbError)
+        }
+      }
+    }
+
+    // ✅ Now userId and productId are accessible here
+    return (
+      <>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-6">
+        <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-12 border border-green-100">
+          {/* Success Icon */}
+          <div className="flex justify-center mb-6">
+            <div className="relative">
+              <div className="absolute inset-0 bg-green-400 rounded-full blur-2xl opacity-20 animate-pulse"></div>
+              <div className="relative bg-gradient-to-br from-green-400 to-emerald-500 rounded-full p-4">
+                <CheckCircle className="w-20 h-20 text-white" strokeWidth={1.5} />
+              </div>
+            </div>
+          </div>
+
+          <h1 className="text-4xl font-bold text-center text-gray-900 mb-3">
+            Payment Successful!
+          </h1>
+
+          <p className="text-center text-gray-600 text-lg mb-8">
+            Thank you for your purchase. Your order has been confirmed.
+          </p>
+
+          {/* Order Details Card */}
+          <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-200">
+            <div className="flex items-center gap-3 mb-4">
+              <ShoppingBag className="w-5 h-5 text-gray-700" />
+              <h2 className="font-semibold text-gray-800">Order Details</h2>
+            </div>
+
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between py-2 border-b border-gray-200">
+                <span className="text-gray-600">Order Status</span>
+                <span className="font-semibold text-green-600">Completed</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-gray-200">
+                <span className="text-gray-600">Transaction ID</span>
+                <span className="font-mono text-xs text-gray-700 truncate max-w-[180px]">
+                  {session_id}
+                </span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-gray-200">
+                <span className="text-gray-600">Amount</span>
+                <span className="font-semibold text-gray-900">
+                  {session.amount_total ? `$${(session.amount_total / 100).toFixed(2)}` : 'N/A'}
+                </span>
+              </div>
+              {userId && (
+                <div className="flex justify-between py-2 border-b border-gray-200">
+                  <span className="text-gray-600">User ID</span>
+                  <span className="font-mono text-xs text-gray-700 truncate max-w-[180px]">
+                    {userId}
+                  </span>
+                </div>
+              )}
+              {productId && (
+                <div className="flex justify-between py-2">
+                  <span className="text-gray-600">Product ID</span>
+                  <span className="font-mono text-xs text-gray-700 truncate max-w-[180px]">
+                    {productId}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Email Confirmation */}
+          <div className="flex items-start gap-4 bg-blue-50 rounded-2xl p-5 mb-8 border border-blue-100">
+            <Mail className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-blue-900">Confirmation Email Sent</p>
+              <p className="text-sm text-blue-700">
+                A confirmation email has been sent to{' '}
+                <span className="font-semibold">{customerEmail}</span>
+              </p>
+              <p className="text-xs text-blue-600 mt-1">
+                If you have any questions, please email{' '}
+                <a href="mailto:orders@example.com" className="underline hover:text-blue-800">
+                  orders@example.com
+                </a>
+              </p>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link
+              href="/"
+              className="flex-1 bg-gray-900 hover:bg-gray-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              Back to Store
+            </Link>
+            <Link
+              href={productId ? `/bookdetailspage/${productId}` : '/orders'}
+              className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {productId ? 'View My Orders' : 'My Orders'}
+            </Link>
+          </div>
+
+          <p className="text-center text-xs text-gray-400 mt-8">
+            This is a confirmation of your purchase. Keep this for your records.
+          </p>
+        </div>
+      </div>
+      </>
+    )
+
+  } catch (error) {
+    console.error('Error processing payment success:', error)
+    return redirect('/?error=payment_verification_failed')
+  }
+}

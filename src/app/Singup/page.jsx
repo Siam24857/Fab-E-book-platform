@@ -36,15 +36,7 @@ const RegisterPage = () => {
   const [error, setError] = useState("");
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-
-  // Check if user is already logged in
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      router.push("/Login");
-    }
-  }, [router]);
-
+ 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -116,10 +108,7 @@ const RegisterPage = () => {
 
       // Registration successful
       if (data) {
-        // Store token if returned
-        if (data.token) {
-          localStorage.setItem("token", data.token);
-        }
+        
         router.push("/Login"); // Redirect to login page
       }
     } catch (err) {
