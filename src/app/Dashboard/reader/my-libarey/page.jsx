@@ -48,7 +48,7 @@ export default async function PurchasedBooks() {
       {books?.length === 0 && (
         <div className="mt-10">
           <p className="text-gray-500">
-            You haven't purchased any books yet.
+            You have not purchased any books yet.
           </p>
         </div>
       )}

@@ -33,6 +33,7 @@ export default async function Success({ searchParams }) {
     let productId = session.metadata?.productId
     let coverimg = session.metadata?.coverimg
     let booktitle = session.metadata?.booktitle
+    let WriterId = session.metadata?.WriterId
 
     if (status === 'complete') {
       // Validate and save history
@@ -47,6 +48,7 @@ export default async function Success({ searchParams }) {
       if (userId && productId) {
         const historydata = {
           userId: userId,
+          writerId: WriterId || "0",
           productId: productId,
           email: customerEmail,
           sessionId: session_id,

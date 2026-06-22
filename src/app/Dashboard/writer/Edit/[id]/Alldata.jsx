@@ -20,10 +20,11 @@ import {
     List,
     Tag
 } from 'lucide-react';
+import { Updatekbooks } from '@/app/lib/Action/Updatebooks';
 
-import { creatcompnay } from '@/app/lib/Action/Creatfomr';
+ 
 
-export default function EbookCreateForm({ id, companys, recuiterdata }) {
+export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
     // Core State
     const [company, setCompany] = useState(companys);
     const [isEditing, setIsEditing] = useState(false);
@@ -139,7 +140,7 @@ export default function EbookCreateForm({ id, companys, recuiterdata }) {
         };
 
         try {
-            const payload = await creatcompnay(ebookData);
+            const payload = await Updatekbooks(bookid, ebookData);
             
             if (payload?.success || payload?.insertedId) {
                 setCompany(ebookData);

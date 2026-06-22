@@ -203,6 +203,7 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                                     <input type="hidden" name="productid" defaultValue={book._id} />
                                     <input type="hidden" name="image" defaultValue={book.cover} />
                                     <input type="hidden" name="title" defaultValue={book.title} />
+                                    <input type="hidden" name="writerid" defaultValue={book?.writerId} />
                                     <section>
                                         <button type="submit" role="link" className="bg-red-700 px-10 py-4 text-lg font-semibold text-white transition hover:bg-red-800">
                                             Buy Now

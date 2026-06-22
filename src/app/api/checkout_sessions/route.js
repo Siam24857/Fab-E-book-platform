@@ -12,6 +12,7 @@ export async function POST(request) {
     const Coverimg = formData.get("image");
     const booktitle = formData.get("title");
     const price = Number(formData.get("price"));
+    const writerid = formData.get("writerid");
 
     const headersList = await headers();
     const origin = headersList.get("origin");
@@ -27,6 +28,7 @@ export async function POST(request) {
         productId: productID?.toString() || "",
         coverimg: Coverimg,
         booktitle:  booktitle,
+        WriterId: writerid,
 
       },
 
