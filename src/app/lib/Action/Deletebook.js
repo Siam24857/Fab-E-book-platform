@@ -1,7 +1,7 @@
-const servelurl = process.env.SERVER_URL;
+const servelurls = process.env.NEXT_PUBLIC_SERVER_URL;
 
 export const BookDelete = async (id) => {
-  const res = await fetch(`${servelurl}/bookdeleted/${id}`, {
+  const res = await fetch(`${servelurls}/bookdeleted/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -11,3 +11,5 @@ export const BookDelete = async (id) => {
   const data = await res.json();
   return data;
 };
+ 
+ 
