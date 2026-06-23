@@ -1,23 +1,17 @@
-// import { getrole } from "@/app/lib/Core/Verfi";
+import { getrole } from "@/app/lib/Core/Verfi";
 
 
  
 
-// const layout = async({children}) => {
+const layout = async({children}) => {
      
-//     await getrole("writer");
-//     return children;
-// };
-
-// export default layout;
-
-import React from 'react';
-
-const layout = ({children}) => {
-    return children
+    await getrole("writer");
+    return children;
 };
 
 export default layout;
+
+ 
 
 
 
