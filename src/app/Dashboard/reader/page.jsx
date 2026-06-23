@@ -1,6 +1,7 @@
 "use client";
 
 import { userdata, userhistory, userseissondata } from "@/app/lib/Action/Userinfo";
+import { useSession } from "@/app/lib/auth-client";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -13,6 +14,7 @@ const FarmerMotion = () => (
 );
 
 const Readerpage = () => {
+  const { data: session, isPending, error } = useSession();
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,11 +24,11 @@ const Readerpage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userData = await userdata();
-        const token = await userseissondata();
-        const historyData = await userhistory(token, userData.id);
         
-        setUser(userData);
+        const token = await userseissondata();
+        const historyData = await userhistory(token, session.user.id);
+        
+        setUser(session.user);
         setHistory(historyData);
         toast.success('📚 Welcome back!');
       } catch (error) {
