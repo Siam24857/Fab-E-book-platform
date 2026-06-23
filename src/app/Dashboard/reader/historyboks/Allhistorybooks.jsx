@@ -1,40 +1,16 @@
+// ./src/app/Dashboard/reader/historyboks/PurchaseHistoryPage.jsx
 "use client";
 
-import { useEffect, useState } from "react";
-import { userdata, userhistory, userseissondata } from "@/app/lib/Action/Userinfo";
+import { useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Download, Eye, Calendar, DollarSign, User, Clock } from 'lucide-react';
 import Link from "next/link";
 
-const PurchaseHistoryPage = ({historyData, tokenData, userdata}) => {
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-
-  useEffect(() => {
-    loadPurchaseHistory();
-  }, []);
-
-  const loadPurchaseHistory = async () => {
-    try {
-      setLoading(true);
-      
-      setUser(userdata);
-      setToken(tokenData);
-      setHistory(historyData);
-      setLoading(false);
-      
-      if (historyData.length > 0) {
-        toast.success(`Loaded ${historyData.length} purchase records`);
-      }
-    } catch (error) {
-      console.error('Error loading purchase history:', error);
-      setLoading(false);
-      toast.error('Failed to load purchase history');
-    }
-  };
+const PurchaseHistoryPage = ({ historyData, tokenData, userData }) => {
+  // সরাসরি প্রপস ব্যবহার করুন
+  const [history] = useState(historyData || []);
+  const [user] = useState(userData || null);
 
   const downloadReceipt = (item) => {
     toast.success(`Downloading receipt for "${item.booktitle}"`);
@@ -124,33 +100,6 @@ const PurchaseHistoryPage = ({historyData, tokenData, userdata}) => {
       scale: 0.95
     }
   };
-
-  if (loading) {
-    return (
-      <motion.div 
-        className="min-h-screen flex items-center justify-center bg-[#faf8f6] px-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div 
-          className="text-center"
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.5, 1, 0.5]
-          }}
-          transition={{ 
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          <BookOpen className="w-12 h-12 mx-auto text-[#8b6f5a] mb-4" />
-          <div className="text-xl text-[#5a4a3a]">Loading purchase history...</div>
-        </motion.div>
-      </motion.div>
-    );
-  }
 
   return (
     <motion.div 
