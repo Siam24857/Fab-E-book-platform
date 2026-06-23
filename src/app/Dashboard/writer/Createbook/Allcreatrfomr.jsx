@@ -22,8 +22,12 @@ import {
 } from 'lucide-react';
 
 import { creatcompnay } from '@/app/lib/Action/Creatfomr';
+import { useSession } from '@/app/lib/auth-client';
 
-export default function EbookCreateForm({ id, companys, recuiterdata }) {
+export default function EbookCreateForm({ token, companys, recuiterdata }) {
+
+      const { data: session, isPending, error } = useSession();
+      
     // Core State
     const [company, setCompany] = useState(companys);
     const [isEditing, setIsEditing] = useState(false);
@@ -125,7 +129,7 @@ export default function EbookCreateForm({ id, companys, recuiterdata }) {
         const ebookData = {
             title: title,
             writer: writer,
-            writerId: id,
+            writerId: session.id,
             cover: imageUrl || (company?.cover || ''),
             description: description || "A fascinating story about discovery and adventure...",
             content: content || "Chapter 1: The Beginning...",
@@ -139,7 +143,7 @@ export default function EbookCreateForm({ id, companys, recuiterdata }) {
         };
 
         try {
-            const payload = await creatcompnay(ebookData);
+            const payload = await creatcompnay(token, ebookData);
             
             if (payload?.success || payload?.insertedId) {
                 setCompany(ebookData);

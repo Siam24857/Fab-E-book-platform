@@ -1,18 +1,28 @@
 // /app/lib/Dataaccses/api.js
 
+ 
+
+ 
+
+ 
+
 const SERVER_URL = process.env.SERVER_URL || 'http://localhost:5000';
 
-export const creatcompnay = async (ebookData) => {
+
+
+export const creatcompnay = async (token, ebookData) => {
   try {
     console.log("Sending ebook data to server:", ebookData);
-    
-    const response = await fetch(`${SERVER_URL}/createbook`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(ebookData),
-    });
+   
+
+   const response = await fetch(`${SERVER_URL}/createbook`, {
+    method: "POST",
+     headers: {
+     "Content-Type": "application/json",
+      Authorization: token ? `Bearer ${token}` : "",
+   },
+    body: JSON.stringify(ebookData),
+});
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

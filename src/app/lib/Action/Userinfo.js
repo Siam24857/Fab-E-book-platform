@@ -9,6 +9,15 @@ export const userdata = async () => {
   return session?.user;
 };
 
+export const userseissondata = async () => {
+  const usersession = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  return usersession?.session.token;
+};
+
+
 const servelurl = process.env.SERVER_URL;
 
 
