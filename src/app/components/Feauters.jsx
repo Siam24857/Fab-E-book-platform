@@ -7,20 +7,7 @@ import toast, { Toaster } from 'react-hot-toast';
 export default async function FeaturedEbooks() {
   const books = await Somebookdata();
 
-  // Handle view all click (this will be client-side)
-  const handleViewAll = () => {
-    // This will run on the client side
-    if (typeof window !== 'undefined') {
-      toast.success('Loading all ebooks');
-    }
-  };
-
-  // Handle book click
-  const handleBookClick = (title) => {
-    if (typeof window !== 'undefined') {
-      toast.success(`Loading ${title}`);
-    }
-  };
+   
 
   return (
     <section className="bg-[#f8f6f4] py-12 sm:py-16 md:py-20">
@@ -56,7 +43,7 @@ export default async function FeaturedEbooks() {
               Featured Ebooks
             </h2>
           </div>
-          <Link href="/browsersbooks" onClick={handleViewAll}>
+          <Link href="/browsersbooks" >
             <button className="flex items-center gap-1.5 sm:gap-2 text-base sm:text-lg font-medium hover:gap-2 sm:hover:gap-3 transition-all text-[#111827]">
               View All
               <ArrowRight size={18} className="sm:w-5 sm:h-5" />
@@ -71,7 +58,7 @@ export default async function FeaturedEbooks() {
               <Link 
                 href={`/bookdeattailspage/${book._id}`} 
                 key={book._id}
-                onClick={() => handleBookClick(book.title)}
+                
               >
                 <div className="group cursor-pointer">
                   {/* Cover */}
@@ -116,7 +103,7 @@ export default async function FeaturedEbooks() {
 
         {/* Mobile View All Button */}
         <div className="mt-8 sm:mt-10 md:mt-12 text-center md:hidden">
-          <Link href="/browsersbooks" onClick={handleViewAll}>
+          <Link href="/browsersbooks"  >
             <button className="w-full sm:w-auto px-6 py-3 bg-[#111827] text-white rounded-lg font-medium hover:bg-[#1f2937] transition-colors">
               View All Ebooks
             </button>

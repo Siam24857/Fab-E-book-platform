@@ -104,7 +104,7 @@ export default function BookStore({ BOOKS }) {
         sort,
         applied: { ...applied }
       });
-      toast.success('Filters applied successfully');
+      
     }
   }, [search, genre, sort, applied]);
 
@@ -156,7 +156,7 @@ export default function BookStore({ BOOKS }) {
   };
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", background: "#fff", color: "#111", flex: 1 }}>
+    <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', sans-serif" }}>
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -181,194 +181,134 @@ export default function BookStore({ BOOKS }) {
           },
         }}
       />
-      
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        input, select { font-family: inherit; }
-        .book-card:hover .book-img { transform: scale(1.04); }
-        .book-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
-        .genre-item:hover { background: #f3f3f3; }
-        select {
-          appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-          background-repeat: no-repeat;
-          background-position: right 12px center;
-          padding-right: 36px;
-        }
-        /* Fix for flex layout */
-        .bookstore-container {
-          display: flex;
-          flex-direction: column;
-          flex: 1;
-        }
-        .bookstore-body {
-          display: flex;
-          flex: 1;
-        }
-        /* Responsive grid */
-        .book-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-          gap: 20px;
-        }
-        @media (min-width: 640px) {
-          .book-grid {
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 24px;
-          }
-        }
-        @media (min-width: 1024px) {
-          .book-grid {
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 28px;
-          }
-        }
-        /* Sidebar responsive */
-        .sidebar {
-          width: 100%;
-          border-right: none;
-          border-bottom: 1px solid #e5e5e5;
-          padding: 16px 0;
-        }
-        @media (min-width: 768px) {
-          .sidebar {
-            width: 220px;
-            border-right: 1px solid #e5e5e5;
-            border-bottom: none;
-            padding: 24px 0;
-          }
-        }
-        /* Search bar responsive */
-        .search-bar {
-          flex-direction: column;
-          padding: 12px 16px;
-        }
-        @media (min-width: 640px) {
-          .search-bar {
-            flex-direction: row;
-            padding: 12px 24px;
-          }
-        }
-      `}</style>
 
-      {/* Search Bar - Responsive */}
-      <div className="search-bar" style={{ borderBottom: "1px solid #e5e5e5", display: "flex", gap: 12, alignItems: "center" }}>
-        <div style={{ flex: 1, display: "flex", alignItems: "center", border: "1px solid #d1d1d1", borderRadius: 8, padding: "0 14px", height: 44, gap: 10, width: "100%" }}>
-          <svg width="16" height="16" fill="none" stroke="#999" strokeWidth="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" strokeLinecap="round" />
-          </svg>
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by title or author..."
-            style={{ border: "none", outline: "none", width: "100%", fontSize: 14, color: "#111", background: "transparent" }}
-          />
+      {/* Search Bar - Fixed Design */}
+      <div className="border-b border-gray-200 bg-white p-4 sm:p-6">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="flex-1 relative">
+            <svg 
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
+              width="18" 
+              height="18" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2" 
+              viewBox="0 0 24 24"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
+            </svg>
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by title or author..."
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition text-sm sm:text-base"
+            />
+          </div>
+          <div className="sm:w-64">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition bg-white text-sm sm:text-base appearance-none"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'right 12px center',
+                paddingRight: '36px'
+              }}
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
-        <select
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
-          style={{ border: "1px solid #d1d1d1", borderRadius: 8, height: 44, padding: "0 12px", fontSize: 14, color: "#111", background: "#fff", cursor: "pointer", width: "100%", maxWidth: "100%" }}
-        >
-          {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
       </div>
 
-      {/* Body */}
-      <div className="bookstore-body" style={{ flexDirection: "column" }}>
-        {/* Sidebar - Responsive */}
-        <aside className="sidebar" style={{ flexShrink: 0 }}>
-          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#888", textTransform: "uppercase", padding: "0 20px", marginBottom: 10 }}>
-            Genre
-          </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", padding: "0 16px", marginBottom: 16 }}>
-            {GENRES.map((g) => (
-              <div
-                key={g}
-                className="genre-item"
-                onClick={() => setGenre(g)}
-                style={{
-                  padding: "6px 14px",
-                  fontSize: 13,
-                  cursor: "pointer",
-                  fontWeight: genre === g ? 600 : 400,
-                  background: genre === g ? "#111" : "transparent",
-                  color: genre === g ? "#fff" : "#222",
-                  transition: "background 0.15s",
-                  borderRadius: "4px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {g}
-              </div>
-            ))}
-          </div>
-
-          <div style={{ height: 1, background: "#e5e5e5", margin: "0 20px" }} />
-
-          {/* Price Range */}
-          <div style={{ padding: "16px 20px" }}>
-            <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#888", textTransform: "uppercase", marginBottom: 14 }}>
-              Price Range
+      {/* Main Content */}
+      <div className="flex flex-col lg:flex-row max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 gap-6 lg:gap-8">
+        {/* Sidebar */}
+        <aside className="lg:w-64 lg:flex-shrink-0">
+          <div className="bg-gray-50 rounded-xl p-4 sm:p-6">
+            <p className="text-xs font-bold tracking-wider text-gray-500 uppercase mb-3">
+              Genre
             </p>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-              <input
-                type="number"
-                placeholder="Min"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-                style={{ width: "100%", border: "1px solid #d1d1d1", borderRadius: 6, padding: "8px 10px", fontSize: 13, outline: "none" }}
-              />
-              <span style={{ color: "#aaa", fontSize: 14 }}>–</span>
-              <input
-                type="number"
-                placeholder="Max"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-                style={{ width: "100%", border: "1px solid #d1d1d1", borderRadius: 6, padding: "8px 10px", fontSize: 13, outline: "none" }}
-              />
+            <div className="flex flex-wrap gap-1.5 mb-6">
+              {GENRES.map((g) => (
+                <button
+                  key={g}
+                  onClick={() => setGenre(g)}
+                  className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg transition whitespace-nowrap ${
+                    genre === g 
+                      ? 'bg-gray-900 text-white' 
+                      : 'bg-white text-gray-700 hover:bg-gray-200 border border-gray-200'
+                  }`}
+                >
+                  {g}
+                </button>
+              ))}
             </div>
-            <button
-              onClick={handleApplyPriceFilter}
-              style={{ width: "100%", padding: "9px 0", background: "#111", color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: "pointer" }}
-            >
-              Apply
-            </button>
+
+            <div className="h-px bg-gray-200 mb-6" />
+
+            {/* Price Range */}
+            <div>
+              <p className="text-xs font-bold tracking-wider text-gray-500 uppercase mb-3">
+                Price Range
+              </p>
+              <div className="flex items-center gap-2 mb-3">
+                <input
+                  type="number"
+                  placeholder="Min"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
+                />
+                <span className="text-gray-400">–</span>
+                <input
+                  type="number"
+                  placeholder="Max"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
+                />
+              </div>
+              <button
+                onClick={handleApplyPriceFilter}
+                className="w-full py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg text-sm font-semibold transition"
+              >
+                Apply
+              </button>
+            </div>
           </div>
         </aside>
 
-        {/* Book Grid - Responsive */}
-        <main style={{ flex: 1, padding: "16px" }}>
+        {/* Book Grid */}
+        <main className="flex-1 min-w-0">
           {paginatedBooks.length === 0 ? (
-            <div style={{ textAlign: "center", marginTop: 80, color: "#999" }}>
-              <p style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>No books found</p>
-              <p style={{ fontSize: 14 }}>Try adjusting your search or filters.</p>
+            <div className="text-center py-16">
+              <p className="text-xl font-semibold text-gray-600 mb-2">No books found</p>
+              <p className="text-gray-500">Try adjusting your search or filters.</p>
             </div>
           ) : (
             <>
-             <div className="book-grid">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                 {paginatedBooks.map((book) => (
                   <Link key={book._id || book.id} href={`/bookdeattailspage/${book._id || book.id}`}>
-                    <div
-                      className="book-card"
-                      style={{ cursor: "pointer", borderRadius: 4, overflow: "hidden", transition: "box-shadow 0.2s" }}
-                    >
-                      <div style={{ overflow: "hidden", aspectRatio: "3/4", background: "#f0f0f0" }}>
+                    <div className="group cursor-pointer transition hover:shadow-lg rounded-lg overflow-hidden">
+                      <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
                         <img
                           src={book.cover}
                           alt={book.title}
-                          className="book-img"
-                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.3s ease" }}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                       </div>
-                      <div style={{ paddingTop: 10 }}>
-                        <p style={{ fontSize: 11, color: "#999", marginBottom: 2 }}>{book.writer}</p>
-                        <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, lineHeight: 1.3 }}>{book.title}</p>
-                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                          <span style={{ fontSize: 14, fontWeight: 700 }}>${book.price.toFixed(2)}</span>
-                          <span style={{ fontSize: 11, fontWeight: 500, background: "#f3f3f3", border: "1px solid #e0e0e0", borderRadius: 4, padding: "2px 8px", color: "#444" }}>
+                      <div className="p-2 sm:p-3">
+                        <p className="text-xs text-gray-500 truncate">{book.writer}</p>
+                        <p className="text-sm font-semibold text-gray-900 truncate mt-0.5">{book.title}</p>
+                        <div className="flex items-center justify-between mt-1.5">
+                          <span className="text-sm font-bold">${book.price.toFixed(2)}</span>
+                          <span className="text-[10px] font-medium px-2 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-600 truncate max-w-[60px]">
                             {book.genre}
                           </span>
                         </div>
@@ -377,25 +317,19 @@ export default function BookStore({ BOOKS }) {
                   </Link>
                 ))}
               </div>
-            
-              
-              {/* Pagination - Responsive */}
+
+              {/* Pagination */}
               {totalPages > 1 && (
-                <div style={{ display: "flex", justifyContent: "center", marginTop: 32, paddingBottom: 20 }}>
-                  <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
+                <div className="flex justify-center mt-8 pb-4">
+                  <div className="flex gap-1.5 flex-wrap justify-center">
                     <button
                       onClick={() => handlePageChange(page - 1)}
                       disabled={page === 1}
-                      style={{
-                        padding: "6px 12px",
-                        border: "1px solid #d1d1d1",
-                        borderRadius: 6,
-                        background: page === 1 ? "#f5f5f5" : "#fff",
-                        color: page === 1 ? "#999" : "#111",
-                        cursor: page === 1 ? "not-allowed" : "pointer",
-                        fontSize: 13,
-                        transition: "all 0.2s"
-                      }}
+                      className={`px-3 py-1.5 border rounded-lg text-sm transition ${
+                        page === 1 
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                          : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300'
+                      }`}
                     >
                       Previous
                     </button>
@@ -404,18 +338,11 @@ export default function BookStore({ BOOKS }) {
                       <button
                         key={p}
                         onClick={() => handlePageChange(p)}
-                        style={{
-                          padding: "6px 12px",
-                          border: "1px solid #d1d1d1",
-                          borderRadius: 6,
-                          background: p === page ? "#111" : "#fff",
-                          color: p === page ? "#fff" : "#111",
-                          cursor: "pointer",
-                          fontSize: 13,
-                          fontWeight: p === page ? 600 : 400,
-                          transition: "all 0.2s",
-                          minWidth: 36
-                        }}
+                        className={`px-3 py-1.5 border rounded-lg text-sm transition min-w-[36px] ${
+                          p === page 
+                            ? 'bg-gray-900 text-white border-gray-900' 
+                            : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300'
+                        }`}
                       >
                         {p}
                       </button>
@@ -424,16 +351,11 @@ export default function BookStore({ BOOKS }) {
                     <button
                       onClick={() => handlePageChange(page + 1)}
                       disabled={page === totalPages}
-                      style={{
-                        padding: "6px 12px",
-                        border: "1px solid #d1d1d1",
-                        borderRadius: 6,
-                        background: page === totalPages ? "#f5f5f5" : "#fff",
-                        color: page === totalPages ? "#999" : "#111",
-                        cursor: page === totalPages ? "not-allowed" : "pointer",
-                        fontSize: 13,
-                        transition: "all 0.2s"
-                      }}
+                      className={`px-3 py-1.5 border rounded-lg text-sm transition ${
+                        page === totalPages 
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                          : 'bg-white text-gray-700 hover:bg-gray-50 border-gray-300'
+                      }`}
                     >
                       Next
                     </button>
