@@ -26,7 +26,13 @@ export function Dashboradlayout({ children }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const data = await userdata();
+        const response = await fetch("/api/me", { cache: "no-store" });
+
+        if (!response.ok) {
+          throw new Error("Failed to load user data");
+        }
+
+        const data = await response.json();
         setUserinfo(data);
         toast.success(`Welcome back, ${data?.name || 'User'}!`);
       } catch (error) {
