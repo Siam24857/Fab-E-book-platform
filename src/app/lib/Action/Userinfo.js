@@ -23,7 +23,9 @@ const servelurl = process.env.SERVER_URL;
 
 export const userhistory =  async(token, id) =>{
 const res = await fetch(`${servelurl}/readerbookhistory/${id}`,{
+  headers:{
     Authorization: token ? `Bearer ${token}` : "",
+  }
 })
   const data = await res.json();
   return data;

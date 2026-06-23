@@ -8,21 +8,19 @@ import { BookOpen, Download, Eye, Calendar, DollarSign, User, Clock } from 'luci
 import Link from "next/link";
 
 const PurchaseHistoryPage = ({ historyData, tokenData, userData }) => {
-  // সরাসরি প্রপস ব্যবহার করুন
+  // ✅ সঠিকভাবে স্টেট ডিক্লেয়ার করুন
   const [history] = useState(historyData || []);
   const [user] = useState(userData || null);
 
   const downloadReceipt = (item) => {
     toast.success(`Downloading receipt for "${item.booktitle}"`);
-    // Add actual download logic here
   };
 
   const viewDetails = (item) => {
     toast.success(`Loading details for "${item.booktitle}"`);
-    // Add view details logic here
   };
 
-  // Animation variants
+  // Animation variants (আপনার বিদ্যমান কোড)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
