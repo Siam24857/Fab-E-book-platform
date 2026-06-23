@@ -1,15 +1,27 @@
 
+const serverUrl = process.env.SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL;
 
-const servelurl = process.env.SERVER_URL
+const fetchBooks = async (path) => {
+  if (!serverUrl) {
+    console.warn("SERVER_URL is not configured; returning empty book data.");
+    return [];
+  }
 
-export const allbookdata = async()=>{
-     const res = await fetch(`${servelurl}/allbooks`)
-     const data = await res.json()
-     return data
-}
+  try {
+    const res = await fetch(`${serverUrl}${path}`, { cache: "no-store" });
 
-export const Somebookdata = async()=>{
-     const respons = await fetch(`${servelurl}/somebooks`)
-     const datas = await respons.json()
-     return datas
-}
+    if (!res.ok) {
+      console.error(`Failed to fetch ${path}: ${res.status}`);
+      return [];
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error(`Failed to fetch ${path}:`, error);
+    return [];
+  }
+};
+
+export const allbookdata = async () => fetchBooks("/allbooks");
+
+export const Somebookdata = async () => fetchBooks("/somebooks");

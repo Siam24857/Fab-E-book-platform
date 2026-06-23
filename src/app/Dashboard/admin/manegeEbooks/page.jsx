@@ -2,7 +2,8 @@ import React from 'react';
 import AllEbooks from './AllEbooks';
 import { allbookdata } from '@/app/Action/ALlbooks';
 import { userseissondata } from '@/app/Action/Userinfo';
- 
+
+export const dynamic = 'force-dynamic';
 
 const MAgeEbooks = async() => {
     const allbookdatas = await allbookdata()
