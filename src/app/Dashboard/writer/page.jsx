@@ -22,13 +22,14 @@ const Writepage = () => {
   const [writerbook, setWriterbook] = useState([]);
   const [writerhistory, setWriterhistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const userData = session.user
 
   useEffect(() => {
     const fetchData = async () => {
      
       try {
       
-        setUser(session.user);
+        setUser(userData);
 
         if (userData?.id) {
           const [books, history] = await Promise.all([
