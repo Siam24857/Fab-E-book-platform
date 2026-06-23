@@ -21,8 +21,10 @@ export const userseissondata = async () => {
 const servelurl = process.env.SERVER_URL;
 
 
-export const userhistory =  async(id) =>{
-const res = await fetch(`${servelurl}/readerbookhistory/${id}`)
+export const userhistory =  async(token, id) =>{
+const res = await fetch(`${servelurl}/readerbookhistory/${id}`,{
+    Authorization: token ? `Bearer ${token}` : "",
+})
   const data = await res.json();
   return data;
 }

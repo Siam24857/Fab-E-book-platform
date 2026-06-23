@@ -13,11 +13,12 @@ export const allUSerget = async() =>{
   return dataes
 }
 
-export const Userupdate = async(id, userdata) =>{
+export const Userupdate = async(token, id, userdata) =>{
   const reseses = await fetch(`${servelurls}/updateuser/${id}`,{
      method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
         },
         body: JSON.stringify(userdata),
   })
@@ -25,11 +26,12 @@ export const Userupdate = async(id, userdata) =>{
   return dataeses
 }
 
-export const Bookuipdate = async(id, status) =>{
+export const Bookuipdate = async(token, id, status) =>{
   const datarespons = await fetch(`${servelurls}/updatebook/${id}`,{
      method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+            Authorization: token ? `Bearer ${token}` : "",
         },
         body: JSON.stringify({status: status})
   })
@@ -60,8 +62,12 @@ export const bookDelte = async(id) =>{
 }
 
 
-export const Historyget = async() =>{
-  const respons = await fetch(`${servelurl}/historybooks`)
+export const Historyget = async(token) =>{
+  const respons = await fetch(`${servelurl}/historybooks`,{
+    headers: {
+      Authorization: token ? `Bearer ${token}` : "",
+    }
+  })
   const datas = await respons.json()
   return datas
 }

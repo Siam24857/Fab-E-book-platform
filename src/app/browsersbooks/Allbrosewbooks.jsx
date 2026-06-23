@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import toast, { Toaster } from 'react-hot-toast';
 
 const GENRES = [
   "All Genres", "Fiction", "Mystery", "Romance",
@@ -103,6 +104,7 @@ export default function BookStore({ BOOKS }) {
         sort,
         applied: { ...applied }
       });
+      toast.success('Filters applied successfully');
     }
   }, [search, genre, sort, applied]);
 
@@ -147,8 +149,39 @@ export default function BookStore({ BOOKS }) {
     }
   };
 
+  // Handle apply price filter
+  const handleApplyPriceFilter = () => {
+    setApplied({ min: minPrice, max: maxPrice });
+    toast.success('Price filter applied');
+  };
+
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", background: "#fff", color: "#111", flex: 1 }}>
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#22c55e',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
+      
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         
@@ -173,11 +206,55 @@ export default function BookStore({ BOOKS }) {
           display: flex;
           flex: 1;
         }
+        /* Responsive grid */
+        .book-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+          gap: 20px;
+        }
+        @media (min-width: 640px) {
+          .book-grid {
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 24px;
+          }
+        }
+        @media (min-width: 1024px) {
+          .book-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 28px;
+          }
+        }
+        /* Sidebar responsive */
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid #e5e5e5;
+          padding: 16px 0;
+        }
+        @media (min-width: 768px) {
+          .sidebar {
+            width: 220px;
+            border-right: 1px solid #e5e5e5;
+            border-bottom: none;
+            padding: 24px 0;
+          }
+        }
+        /* Search bar responsive */
+        .search-bar {
+          flex-direction: column;
+          padding: 12px 16px;
+        }
+        @media (min-width: 640px) {
+          .search-bar {
+            flex-direction: row;
+            padding: 12px 24px;
+          }
+        }
       `}</style>
 
-      {/* Search Bar */}
-      <div style={{ borderBottom: "1px solid #e5e5e5", padding: "12px 24px", display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-        <div style={{ flex: 1, display: "flex", alignItems: "center", border: "1px solid #d1d1d1", borderRadius: 8, padding: "0 14px", height: 44, gap: 10, minWidth: "200px" }}>
+      {/* Search Bar - Responsive */}
+      <div className="search-bar" style={{ borderBottom: "1px solid #e5e5e5", display: "flex", gap: 12, alignItems: "center" }}>
+        <div style={{ flex: 1, display: "flex", alignItems: "center", border: "1px solid #d1d1d1", borderRadius: 8, padding: "0 14px", height: 44, gap: 10, width: "100%" }}>
           <svg width="16" height="16" fill="none" stroke="#999" strokeWidth="2" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" strokeLinecap="round" />
           </svg>
@@ -191,7 +268,7 @@ export default function BookStore({ BOOKS }) {
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value)}
-          style={{ border: "1px solid #d1d1d1", borderRadius: 8, height: 44, padding: "0 12px", fontSize: 14, color: "#111", background: "#fff", cursor: "pointer", minWidth: 180 }}
+          style={{ border: "1px solid #d1d1d1", borderRadius: 8, height: 44, padding: "0 12px", fontSize: 14, color: "#111", background: "#fff", cursor: "pointer", width: "100%", maxWidth: "100%" }}
         >
           {SORT_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
@@ -200,35 +277,39 @@ export default function BookStore({ BOOKS }) {
       </div>
 
       {/* Body */}
-      <div className="bookstore-body">
-        {/* Sidebar */}
-        <aside style={{ width: 220, borderRight: "1px solid #e5e5e5", padding: "24px 0", flexShrink: 0 }}>
+      <div className="bookstore-body" style={{ flexDirection: "column" }}>
+        {/* Sidebar - Responsive */}
+        <aside className="sidebar" style={{ flexShrink: 0 }}>
           <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#888", textTransform: "uppercase", padding: "0 20px", marginBottom: 10 }}>
             Genre
           </p>
-          {GENRES.map((g) => (
-            <div
-              key={g}
-              className="genre-item"
-              onClick={() => setGenre(g)}
-              style={{
-                padding: "9px 20px",
-                fontSize: 14,
-                cursor: "pointer",
-                fontWeight: genre === g ? 600 : 400,
-                background: genre === g ? "#111" : "transparent",
-                color: genre === g ? "#fff" : "#222",
-                transition: "background 0.15s",
-              }}
-            >
-              {g}
-            </div>
-          ))}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", padding: "0 16px", marginBottom: 16 }}>
+            {GENRES.map((g) => (
+              <div
+                key={g}
+                className="genre-item"
+                onClick={() => setGenre(g)}
+                style={{
+                  padding: "6px 14px",
+                  fontSize: 13,
+                  cursor: "pointer",
+                  fontWeight: genre === g ? 600 : 400,
+                  background: genre === g ? "#111" : "transparent",
+                  color: genre === g ? "#fff" : "#222",
+                  transition: "background 0.15s",
+                  borderRadius: "4px",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {g}
+              </div>
+            ))}
+          </div>
 
-          <div style={{ height: 1, background: "#e5e5e5", margin: "20px 20px" }} />
+          <div style={{ height: 1, background: "#e5e5e5", margin: "0 20px" }} />
 
           {/* Price Range */}
-          <div style={{ padding: "0 20px" }}>
+          <div style={{ padding: "16px 20px" }}>
             <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: "#888", textTransform: "uppercase", marginBottom: 14 }}>
               Price Range
             </p>
@@ -250,7 +331,7 @@ export default function BookStore({ BOOKS }) {
               />
             </div>
             <button
-              onClick={() => setApplied({ min: minPrice, max: maxPrice })}
+              onClick={handleApplyPriceFilter}
               style={{ width: "100%", padding: "9px 0", background: "#111", color: "#fff", border: "none", borderRadius: 6, fontSize: 13, fontWeight: 600, cursor: "pointer" }}
             >
               Apply
@@ -258,8 +339,8 @@ export default function BookStore({ BOOKS }) {
           </div>
         </aside>
 
-        {/* Book Grid */}
-        <main style={{ flex: 1, padding: "28px" }}>
+        {/* Book Grid - Responsive */}
+        <main style={{ flex: 1, padding: "16px" }}>
           {paginatedBooks.length === 0 ? (
             <div style={{ textAlign: "center", marginTop: 80, color: "#999" }}>
               <p style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>No books found</p>
@@ -267,7 +348,7 @@ export default function BookStore({ BOOKS }) {
             </div>
           ) : (
             <>
-             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 24 }}>
+             <div className="book-grid">
                 {paginatedBooks.map((book) => (
                   <Link key={book._id || book.id} href={`/bookdeattailspage/${book._id || book.id}`}>
                     <div
@@ -298,21 +379,21 @@ export default function BookStore({ BOOKS }) {
               </div>
             
               
-              {/* Pagination */}
+              {/* Pagination - Responsive */}
               {totalPages > 1 && (
                 <div style={{ display: "flex", justifyContent: "center", marginTop: 32, paddingBottom: 20 }}>
-                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap", justifyContent: "center" }}>
                     <button
                       onClick={() => handlePageChange(page - 1)}
                       disabled={page === 1}
                       style={{
-                        padding: "8px 16px",
+                        padding: "6px 12px",
                         border: "1px solid #d1d1d1",
                         borderRadius: 6,
                         background: page === 1 ? "#f5f5f5" : "#fff",
                         color: page === 1 ? "#999" : "#111",
                         cursor: page === 1 ? "not-allowed" : "pointer",
-                        fontSize: 14,
+                        fontSize: 13,
                         transition: "all 0.2s"
                       }}
                     >
@@ -324,16 +405,16 @@ export default function BookStore({ BOOKS }) {
                         key={p}
                         onClick={() => handlePageChange(p)}
                         style={{
-                          padding: "8px 16px",
+                          padding: "6px 12px",
                           border: "1px solid #d1d1d1",
                           borderRadius: 6,
                           background: p === page ? "#111" : "#fff",
                           color: p === page ? "#fff" : "#111",
                           cursor: "pointer",
-                          fontSize: 14,
+                          fontSize: 13,
                           fontWeight: p === page ? 600 : 400,
                           transition: "all 0.2s",
-                          minWidth: 40
+                          minWidth: 36
                         }}
                       >
                         {p}
@@ -344,13 +425,13 @@ export default function BookStore({ BOOKS }) {
                       onClick={() => handlePageChange(page + 1)}
                       disabled={page === totalPages}
                       style={{
-                        padding: "8px 16px",
+                        padding: "6px 12px",
                         border: "1px solid #d1d1d1",
                         borderRadius: 6,
                         background: page === totalPages ? "#f5f5f5" : "#fff",
                         color: page === totalPages ? "#999" : "#111",
                         cursor: page === totalPages ? "not-allowed" : "pointer",
-                        fontSize: 14,
+                        fontSize: 13,
                         transition: "all 0.2s"
                       }}
                     >

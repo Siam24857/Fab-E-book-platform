@@ -3,6 +3,7 @@
 import { Bookmarkbooks } from "@/app/lib/Action/Bookmarkfuctionalyti";
 import { Calendar, Tag, User, Bookmark, Lock } from "lucide-react";
 import { useState, useEffect } from "react";
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function BookDetailsPage({ book, paymented, userId }) {
     // State for bookmark
@@ -54,7 +55,6 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                 };
                 savedBookmarks.push(newBookmark);
                 localStorage.setItem('bookmarks', JSON.stringify(savedBookmarks));
-                console.log('Bookmark saved to localStorage:', newBookmark);
                 return newBookmark;
             }
             return null;
@@ -70,7 +70,6 @@ export default function BookDetailsPage({ book, paymented, userId }) {
             const savedBookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
             const updatedBookmarks = savedBookmarks.filter(b => b.bookId !== bookId);
             localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
-            console.log('Bookmark removed from localStorage for book:', bookId);
             return true;
         } catch (error) {
             console.error('Error removing from localStorage:', error);
@@ -81,7 +80,7 @@ export default function BookDetailsPage({ book, paymented, userId }) {
     // Toggle bookmark function
     const toggleBookmark = async () => {
         if (!userId) {
-            alert('Please login to bookmark books');
+            toast.error('Please login to bookmark books');
             return;
         }
 
@@ -95,9 +94,9 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                 if (removed) {
                     setIsBookmarked(false);
                     setBookmarkId(null);
-                    console.log('Bookmark removed successfully');
+                    toast.success('Bookmark removed successfully');
                 } else {
-                    console.error('Failed to remove bookmark from localStorage');
+                    toast.error('Failed to remove bookmark');
                 }
             } else {
                 // Add bookmark to localStorage first
@@ -116,7 +115,7 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                 if (localBookmark) {
                     setIsBookmarked(true);
                     setBookmarkId(localBookmark._id);
-                    console.log('Bookmark saved to localStorage');
+                    toast.success('Bookmark added successfully');
                     
                     // Also try to save to database (optional)
                     try {
@@ -126,13 +125,12 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                         console.warn('Failed to save to database, but localStorage saved:', dbError);
                     }
                 } else {
-                    console.error('Failed to save bookmark to localStorage');
-                    alert('Failed to bookmark. Please try again.');
+                    toast.error('Failed to bookmark. Please try again.');
                 }
             }
         } catch (error) {
             console.error('Error toggling bookmark:', error);
-            alert('An error occurred. Please try again.');
+            toast.error('An error occurred. Please try again.');
         } finally {
             setLoading(false);
         }
@@ -140,10 +138,36 @@ export default function BookDetailsPage({ book, paymented, userId }) {
 
     return (
         <div className="min-h-screen bg-stone-100">
-            <div className="mx-auto max-w-7xl px-8 py-12">
-                <div className="grid gap-12 lg:grid-cols-[320px_1fr]">
-                    {/* Cover */}
-                    <div>
+            {/* Toaster Component */}
+            <Toaster 
+                position="top-right"
+                toastOptions={{
+                    duration: 3000,
+                    style: {
+                        background: '#363636',
+                        color: '#fff',
+                    },
+                    success: {
+                        duration: 3000,
+                        iconTheme: {
+                            primary: '#22c55e',
+                            secondary: '#fff',
+                        },
+                    },
+                    error: {
+                        duration: 4000,
+                        iconTheme: {
+                            primary: '#ef4444',
+                            secondary: '#fff',
+                        },
+                    },
+                }}
+            />
+
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+                <div className="grid gap-8 md:gap-12 lg:grid-cols-[320px_1fr]">
+                    {/* Cover - Responsive */}
+                    <div className="max-w-[280px] sm:max-w-[320px] mx-auto lg:mx-0 w-full">
                         <img
                             src={book.cover}
                             alt={book.title}
@@ -151,61 +175,66 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                         />
                     </div>
 
-                    {/* Details */}
+                    {/* Details - Responsive */}
                     <div>
-                        <span className="inline-block bg-stone-200 px-4 py-1 text-sm font-medium">
+                        <span className="inline-block bg-stone-200 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium">
                             {book.genre}
                         </span>
 
-                        <h1 className="mt-5 text-6xl font-bold text-stone-900">
+                        <h1 className="mt-4 sm:mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 leading-tight">
                             {book.title}
                         </h1>
 
-                        <div className="mt-6 flex flex-wrap items-center gap-8 text-stone-600">
-                            <div className="flex items-center gap-2">
-                                <User size={18} />
+                        <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 text-sm sm:text-base text-stone-600">
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <User size={16} className="sm:w-[18px] sm:h-[18px]" />
                                 <span>{book.author}</span>
                             </div>
 
-                            <div className="flex items-center gap-2">
-                                <Calendar size={18} />
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <Calendar size={16} className="sm:w-[18px] sm:h-[18px]" />
                                 <span>{book.publishedAt}</span>
                             </div>
 
-                            <div className="flex items-center gap-2">
-                                <Tag size={18} />
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                                <Tag size={16} className="sm:w-[18px] sm:h-[18px]" />
                                 <span>{book.status}</span>
                             </div>
                         </div>
 
-                        <hr className="my-8 border-stone-300" />
+                        <hr className="my-6 sm:my-8 border-stone-300" />
 
-                        <h2 className="mb-4 text-3xl font-semibold">
+                        <h2 className="mb-3 sm:mb-4 text-2xl sm:text-3xl font-semibold">
                             Description
                         </h2>
 
-                        <p className="max-w-4xl text-lg leading-9 text-stone-700">
+                        <p className="max-w-4xl text-base sm:text-lg leading-7 sm:leading-9 text-stone-700">
                             {book.description}
                         </p>
 
-                        <div className="mt-10 flex items-center gap-5">
-                            <span className="text-5xl font-bold text-stone-900">
+                        {/* Actions - Responsive */}
+                        <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 sm:gap-5">
+                            <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900">
                                 ${book.price}
                             </span>
 
                             {paymented === book._id ? (
-                                <button className="bg-red-700 px-10 py-4 text-lg font-semibold text-white transition">
+                                <button className="bg-red-700 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white transition hover:bg-red-800 w-full sm:w-auto">
                                     Already Available for you 
                                 </button>
                             ) : (
-                                <form action="/api/checkout_sessions" method="POST">
+                                <form action="/api/checkout_sessions" method="POST" className="w-full sm:w-auto">
                                     <input type="hidden" name="price" defaultValue={book.price} />
                                     <input type="hidden" name="productid" defaultValue={book._id} />
                                     <input type="hidden" name="image" defaultValue={book.cover} />
                                     <input type="hidden" name="title" defaultValue={book.title} />
                                     <input type="hidden" name="writerid" defaultValue={book?.writerId} />
                                     <section>
-                                        <button type="submit" role="link" className="bg-red-700 px-10 py-4 text-lg font-semibold text-white transition hover:bg-red-800">
+                                        <button 
+                                            type="submit" 
+                                            role="link" 
+                                            className="bg-red-700 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white transition hover:bg-red-800 w-full sm:w-auto"
+                                        >
                                             Buy Now
                                         </button>
                                     </section>
@@ -216,7 +245,7 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                             <button
                                 onClick={toggleBookmark}
                                 disabled={loading}
-                                className={`border border-stone-300 p-4 transition hover:bg-stone-200 ${
+                                className={`border border-stone-300 p-3 sm:p-4 transition hover:bg-stone-200 ${
                                     isBookmarked 
                                         ? 'bg-stone-800 text-white hover:bg-stone-700' 
                                         : 'bg-transparent text-stone-700'
@@ -224,22 +253,24 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                                 aria-label={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
                             >
                                 <Bookmark 
-                                    size={22} 
+                                    size={18} 
+                                    className="sm:w-[22px] sm:h-[22px]"
                                     fill={isBookmarked ? 'currentColor' : 'none'}
                                 />
                             </button>
                         </div>
 
-                        <hr className="my-10 border-stone-300" />
+                        <hr className="my-8 sm:my-10 border-stone-300" />
 
-                        <div className="flex items-center gap-4 border border-stone-300 bg-stone-50 p-6 text-stone-700">
-                            <Lock size={24} />
+                        {/* Content Section - Responsive */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 border border-stone-300 bg-stone-50 p-4 sm:p-6 text-stone-700">
+                            <Lock size={20} className="sm:w-[24px] sm:h-[24px]" />
                             {paymented === book._id ? (
-                                <p className="text-lg">
+                                <p className="text-base sm:text-lg break-words">
                                     {book.content}
                                 </p>
                             ) : (
-                                <p className="text-lg">
+                                <p className="text-base sm:text-lg">
                                     Purchase this ebook to read the full content.
                                 </p>
                             )}

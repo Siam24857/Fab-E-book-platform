@@ -97,18 +97,9 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      await authClient.signIn.social({
-        provider: "google",
-        callbackURL: "/",
-      });
-    } catch (err) {
-      setError("Google login failed. Please try again.");
-      setLoading(false);
-    }
+   await authClient.signIn.social({
+    provider: "google",
+  });
   };
 
   // Animation variants
@@ -133,37 +124,37 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center py-8 px-3 sm:py-12 sm:px-6 lg:px-8">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-[95%] sm:max-w-md"
       >
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10">
+        <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-7 md:p-10">
           {/* Logo and Header */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             animate="visible"
-            className="text-center mb-8"
+            className="text-center mb-6 sm:mb-8"
           >
             <motion.div variants={itemVariants}>
               <Link
                 href="/"
-                className="inline-flex items-center space-x-2 mb-4"
+                className="inline-flex items-center space-x-2 mb-3 sm:mb-4"
               >
-                <BookOpen className="w-8 h-8 text-indigo-600" />
-                <span className="text-2xl font-bold text-gray-800">Fable</span>
+                <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 text-indigo-600" />
+                <span className="text-xl sm:text-2xl font-bold text-gray-800">Fable</span>
               </Link>
             </motion.div>
             <motion.h2
               variants={itemVariants}
-              className="text-3xl font-bold text-gray-800 mb-2"
+              className="text-2xl sm:text-3xl font-bold text-gray-800 mb-1 sm:mb-2"
             >
               Welcome Back
             </motion.h2>
-            <motion.p variants={itemVariants} className="text-gray-600">
+            <motion.p variants={itemVariants} className="text-sm sm:text-base text-gray-600">
               Sign in to continue reading
             </motion.p>
           </motion.div>
@@ -173,9 +164,9 @@ const LoginPage = () => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm flex items-start"
+              className="mb-4 p-2.5 sm:p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-xs sm:text-sm flex items-start"
             >
-              <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 flex-shrink-0 mt-0.5" />
               <span>{error}</span>
             </motion.div>
           )}
@@ -186,18 +177,18 @@ const LoginPage = () => {
             initial="hidden"
             animate="visible"
             onSubmit={handleSubmit}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
             {/* Email */}
             <motion.div variants={itemVariants}>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2"
               >
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                 <input
                   type="email"
                   id="email"
@@ -205,7 +196,7 @@ const LoginPage = () => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none"
+                  className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none"
                   required
                 />
               </div>
@@ -213,22 +204,22 @@ const LoginPage = () => {
 
             {/* Password */}
             <motion.div variants={itemVariants}>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-wrap items-center justify-between mb-1.5 sm:mb-2 gap-1">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-xs sm:text-sm font-medium text-gray-700"
                 >
                   Password
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-indigo-600 hover:text-indigo-800 hover:underline"
+                  className="text-xs sm:text-sm text-indigo-600 hover:text-indigo-800 hover:underline"
                 >
                   Forgot password?
                 </Link>
               </div>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 sm:w-5 sm:h-5" />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -236,18 +227,18 @@ const LoginPage = () => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none"
+                  className="w-full pl-9 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
+                    <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" />
                   ) : (
-                    <Eye className="w-5 h-5" />
+                    <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
                   )}
                 </button>
               </div>
@@ -261,11 +252,11 @@ const LoginPage = () => {
                   id="rememberMe"
                   checked={rememberMe}
                   onChange={() => setRememberMe(!rememberMe)}
-                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                 />
                 <label
                   htmlFor="rememberMe"
-                  className="ml-2 text-sm text-gray-600"
+                  className="ml-2 text-xs sm:text-sm text-gray-600"
                 >
                   Remember me
                 </label>
@@ -277,16 +268,16 @@ const LoginPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center"
+                className="w-full py-2.5 sm:py-3 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base flex items-center justify-center"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                    <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin mr-2" />
                     Signing in...
                   </>
                 ) : (
                   <>
-                    <LogIn className="w-5 h-5 mr-2" />
+                    <LogIn className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                     Sign In
                   </>
                 )}
@@ -296,13 +287,13 @@ const LoginPage = () => {
             {/* Divider */}
             <motion.div
               variants={itemVariants}
-              className="relative my-6"
+              className="relative my-4 sm:my-6"
             >
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300"></div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-500">
+              <div className="relative flex justify-center text-xs sm:text-sm">
+                <span className="px-3 sm:px-4 bg-white text-gray-500">
                   Or continue with
                 </span>
               </div>
@@ -314,9 +305,9 @@ const LoginPage = () => {
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={loading}
-                className="w-full py-3 px-4 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full py-2.5 sm:py-3 px-4 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base flex items-center justify-center"
               >
-                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" viewBox="0 0 24 24">
                   <path
                     fill="#4285F4"
                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -341,9 +332,9 @@ const LoginPage = () => {
             {/* Register Link */}
             <motion.div
               variants={itemVariants}
-              className="text-center mt-6"
+              className="text-center mt-4 sm:mt-6"
             >
-              <p className="text-gray-600">
+              <p className="text-xs sm:text-sm text-gray-600">
                 Don&apos;t have an account?{" "}
                 <Link
                   href="/Singup"

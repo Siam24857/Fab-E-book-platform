@@ -1,13 +1,14 @@
 
-import { userdata } from "@/app/lib/Action/Userinfo";
+import { userdata, userseissondata } from "@/app/lib/Action/Userinfo";
 import { WriterHistorybook } from "@/app/lib/Action/Writerhistorysales";
 
 import { TrendingUp } from "lucide-react";
 
 const Slaeshistory = async () => {
+    const token = await userseissondata()
   const user = await userdata();
-  const writerhistory = await WriterHistorybook(user?.id);
-  console.log(writerhistory)
+  const writerhistory = await WriterHistorybook(token, user?.id);
+
 
   const totalRevenue =
     writerhistory?.reduce(
