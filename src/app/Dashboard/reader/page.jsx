@@ -1,6 +1,6 @@
 "use client";
 
-import { userdata, userhistory, userseissondata } from "@/app/lib/Action/Userinfo";
+import { userhistory, userseissondata } from "@/app/lib/Action/Userinfo";
 import { useSession } from "@/app/lib/auth-client";
 import Image from "next/image";
 import { useState, useEffect } from "react";
