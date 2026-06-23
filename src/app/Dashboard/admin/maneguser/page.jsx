@@ -3,6 +3,8 @@ import React from 'react';
 import Maneger from './Allmageuse';
 import { userseissondata } from '@/app/Action/Userinfo';
 
+export const dynamic = 'force-dynamic';
+
 const MAgeallsuer = async() => {
       const alluserdata = await allUSerget();
         const token = await userseissondata()

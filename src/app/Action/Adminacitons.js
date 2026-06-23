@@ -1,20 +1,40 @@
- 
-const servelurl = process.env.SERVER_URL
-const servelurls = process.env.NEXT_PUBLIC_SERVER_URL;
-export const USerget = async(id) =>{
-  const res = await fetch(`${servelurl}/readers/${id}`)
-  const data = await res.json()
-  return data
-}
+const serverUrl = process.env.SERVER_URL || process.env.NEXT_PUBLIC_SERVER_URL;
+const publicServerUrl = process.env.NEXT_PUBLIC_SERVER_URL || process.env.SERVER_URL;
 
-export const allUSerget = async() =>{
-  const reses = await fetch(`${servelurl}/alluser`)
-  const dataes = await reses.json()
-  return dataes
-}
+const fetchJson = async (path, options = {}) => {
+  if (!serverUrl) {
+    console.warn(`No server URL configured for ${path}; returning empty response.`);
+    return [];
+  }
+
+  try {
+    const res = await fetch(`${serverUrl}${path}`, {
+      cache: "no-store",
+      ...options,
+    });
+
+    if (!res.ok) {
+      console.error(`Failed to fetch ${path}: ${res.status}`);
+      return [];
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error(`Failed to fetch ${path}:`, error);
+    return [];
+  }
+};
+
+export const USerget = async (id) => fetchJson(`/readers/${id}`);
+
+export const allUSerget = async () => fetchJson(`/alluser`);
 
 export const Userupdate = async(token, id, userdata) =>{
-  const reseses = await fetch(`${servelurls}/updateuser/${id}`,{
+  if (!publicServerUrl) {
+    return { success: false, message: "Server URL not configured." };
+  }
+
+  const reseses = await fetch(`${publicServerUrl}/updateuser/${id}`,{
      method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -27,7 +47,11 @@ export const Userupdate = async(token, id, userdata) =>{
 }
 
 export const Bookuipdate = async(token, id, status) =>{
-  const datarespons = await fetch(`${servelurls}/updatebook/${id}`,{
+  if (!publicServerUrl) {
+    return { success: false, message: "Server URL not configured." };
+  }
+
+  const datarespons = await fetch(`${publicServerUrl}/updatebook/${id}`,{
      method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +64,11 @@ export const Bookuipdate = async(token, id, status) =>{
 }
 
 export const UserDelte = async(id) =>{
-  const  responsdata = await fetch(`${servelurls}/delteeuser/${id}`,{
+  if (!publicServerUrl) {
+    return { success: false, message: "Server URL not configured." };
+  }
+
+  const  responsdata = await fetch(`${publicServerUrl}/delteeuser/${id}`,{
      method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +79,11 @@ export const UserDelte = async(id) =>{
 }
 
 export const bookDelte = async(id) =>{
-  const  responsdat = await fetch(`${servelurls}/deltebook/${id}`,{
+  if (!publicServerUrl) {
+    return { success: false, message: "Server URL not configured." };
+  }
+
+  const  responsdat = await fetch(`${publicServerUrl}/deltebook/${id}`,{
      method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -63,7 +95,11 @@ export const bookDelte = async(id) =>{
 
 
 export const Historyget = async(token) =>{
-  const respons = await fetch(`${servelurl}/historybooks`,{
+  if (!serverUrl) {
+    return [];
+  }
+
+  const respons = await fetch(`${serverUrl}/historybooks`,{
     headers: {
       Authorization: token ? `Bearer ${token}` : "",
     }

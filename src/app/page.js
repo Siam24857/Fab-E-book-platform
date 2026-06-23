@@ -4,6 +4,8 @@ import FeaturedEbooks from "./components/Feauters";
 import TopWriters from "./components/Topwriters";
 import EbookGenres from "./components/EbookGerace";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <div>

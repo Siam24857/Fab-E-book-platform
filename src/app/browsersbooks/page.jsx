@@ -2,6 +2,8 @@ import React from 'react';
 import BookStore from './Allbrosewbooks';
 import { allbookdata } from '../Action/ALlbooks';
 
+export const dynamic = 'force-dynamic';
+
 const Brosersbooks = async ({ searchParams }) => {
   // Fix 1: No need to await searchParams in Next.js 15+ as it's already resolved
   const params = searchParams;
