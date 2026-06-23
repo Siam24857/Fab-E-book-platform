@@ -26,9 +26,11 @@ import {
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import { Updatekbooks } from '@/app/Action/Updatebooks';
-import { userseissondata } from '@/app/Action/Userinfo';
+import { useSession } from '@/app/lib/auth-client';
 
 export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
+    const { data: session } = useSession();
+
     // Core State
     const [company, setCompany] = useState(companys);
     const [isEditing, setIsEditing] = useState(false);
@@ -89,7 +91,6 @@ export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
 
     // Cloudinary Upload Handler
     const handleImageUpload = async (e) => {
-        const token = await userseissondata();
         const file = e.target.files[0];
         if (!file) return;
 
@@ -214,7 +215,12 @@ export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
         const submitToast = toast.loading('Updating ebook...');
 
         try {
-            const token = await userseissondata();
+            const token = session?.session?.token || session?.token;
+
+            if (!token) {
+                throw new Error("Please sign in again to continue.");
+            }
+
             const payload = await Updatekbooks(token, bookid, ebookData);
             
             if (payload?.success || payload?.insertedId) {

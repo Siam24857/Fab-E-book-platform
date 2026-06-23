@@ -168,7 +168,7 @@ export default async function Success({ searchParams }) {
             >
               <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
               {productId ? 'View My Orders' : 'My Orders'}
-            </Button>
+            </Link>
           </div>
 
           <p className="text-center text-[10px] sm:text-xs text-gray-400 mt-6 sm:mt-8">

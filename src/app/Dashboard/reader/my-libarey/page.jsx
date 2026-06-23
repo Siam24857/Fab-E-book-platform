@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { userhistory, userseissondata } from "@/app/Action/Userinfo";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,10 +23,15 @@ export default function PurchasedBooks() {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      const token = await userseissondata();
-      const data = await userhistory(token, session.user.id);
+      const res = await fetch("/api/library", { cache: "no-store" });
+
+      if (!res.ok) {
+        throw new Error("Failed to load your books");
+      }
+
+      const data = await res.json();
       setBooks(data || []);
-      
+
       if (data?.length > 0) {
         toast.success(`Welcome back! You have ${data.length} books in your library`);
       }
