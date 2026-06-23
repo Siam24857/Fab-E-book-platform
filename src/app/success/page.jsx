@@ -3,52 +3,42 @@ import { stripe } from '../lib/stripe'
 import Link from 'next/link'
 import { CheckCircle, Mail, ShoppingBag, ArrowLeft } from 'lucide-react'
 import { Booupdatehistory } from '../Action/Historybooks'
- 
 
 export default async function Success({ searchParams }) {
   const { session_id } = await searchParams
 
+  // Validate session_id
   if (!session_id) {
     throw new Error('Please provide a valid session_id (`cs_test_...`)')
   }
 
   try {
+    // Retrieve Stripe session with expanded data
     const session = await stripe.checkout.sessions.retrieve(session_id, {
       expand: ['line_items', 'payment_intent']
     })
 
-    const {
-      status,
-      customer_details
-    } = session
-    
+    const { status, customer_details } = session
     const customerEmail = customer_details?.email || 'your email'
 
+    // Redirect if payment is still open
     if (status === 'open') {
       return redirect('/')
     }
 
-    // ✅ Define userId and productId at the outer scope
-    let userId = session.metadata?.userId
-    let productId = session.metadata?.productId
-    let coverimg = session.metadata?.coverimg
-    let booktitle = session.metadata?.booktitle
-    let WriterId = session.metadata?.WriterId
+    // Extract metadata with proper null checks
+    const userId = session.metadata?.userId || null
+    const productId = session.metadata?.productId || null
+    const coverimg = session.metadata?.coverimg || null
+    const booktitle = session.metadata?.booktitle || null
+    const writerId = session.metadata?.WriterId || null
 
-    if (status === 'complete') {
-      // Validate and save history
-      if (!userId || !productId) {
-        console.warn('Missing userId or productId in session metadata:', {
-          userId,
-          productId,
-          session_id
-        })
-      }
-
-      if (userId && productId) {
-        const historydata = {
+    // Save purchase history if payment is complete
+    if (status === 'complete' && userId && productId) {
+      try {
+        const historyData = {
           userId: userId,
-          writerId: WriterId || "0",
+          writerId: writerId || "0",
           productId: productId,
           email: customerEmail,
           sessionId: session_id,
@@ -56,22 +46,26 @@ export default async function Success({ searchParams }) {
           amount: session.amount_total ? session.amount_total / 100 : null,
           currency: session.currency,
           timestamp: new Date(),
-          coverimg: coverimg,
-          booktitle: booktitle
+          coverimg: coverimg || undefined,
+          booktitle: booktitle || undefined
         }
 
-        try {
-          const savedHistory = await Booupdatehistory(historydata)
-          console.log('History saved successfully:', savedHistory)
-        } catch (dbError) {
-          console.error('Failed to save purchase history:', dbError)
-        }
+        const savedHistory = await Booupdatehistory(historyData)
+        console.log('Purchase history saved successfully:', savedHistory)
+      } catch (dbError) {
+        console.error('Failed to save purchase history:', dbError)
+        // Don't throw error here - we want to show success page even if history save fails
       }
+    } else if (status === 'complete') {
+      console.warn('Missing userId or productId in session metadata:', {
+        userId,
+        productId,
+        session_id
+      })
     }
 
-    // ✅ Now userId and productId are accessible here
+    // Render success page
     return (
-      <>
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center p-4 sm:p-6">
         <div className="max-w-[95%] sm:max-w-2xl w-full bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 md:p-12 border border-green-100">
           {/* Success Icon */}
@@ -102,7 +96,9 @@ export default async function Success({ searchParams }) {
             <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
               <div className="flex flex-wrap justify-between py-2 border-b border-gray-200">
                 <span className="text-gray-600">Order Status</span>
-                <span className="font-semibold text-green-600">Completed</span>
+                <span className="font-semibold text-green-600">
+                  {status === 'complete' ? 'Completed' : status}
+                </span>
               </div>
               <div className="flex flex-wrap justify-between py-2 border-b border-gray-200">
                 <span className="text-gray-600">Transaction ID</span>
@@ -129,6 +125,14 @@ export default async function Success({ searchParams }) {
                   <span className="text-gray-600">Product ID</span>
                   <span className="font-mono text-[10px] sm:text-xs text-gray-700 truncate max-w-[120px] sm:max-w-[180px]">
                     {productId}
+                  </span>
+                </div>
+              )}
+              {booktitle && (
+                <div className="flex flex-wrap justify-between py-2 border-t border-gray-200 mt-2 pt-2">
+                  <span className="text-gray-600">Book Title</span>
+                  <span className="font-medium text-gray-700 truncate max-w-[120px] sm:max-w-[180px]">
+                    {booktitle}
                   </span>
                 </div>
               )}
@@ -167,7 +171,7 @@ export default async function Success({ searchParams }) {
               className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl text-sm sm:text-base"
             >
               <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
-              {productId ? 'View My Orders' : 'My Orders'}
+              {productId ? 'View Book Details' : 'My Orders'}
             </Link>
           </div>
 
@@ -176,11 +180,11 @@ export default async function Success({ searchParams }) {
           </p>
         </div>
       </div>
-      </>
     )
 
   } catch (error) {
     console.error('Error processing payment success:', error)
+    // Redirect to home with error param
     return redirect('/?error=payment_verification_failed')
   }
 }
