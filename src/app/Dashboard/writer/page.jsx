@@ -14,8 +14,10 @@ import toast, { Toaster } from "react-hot-toast";
 import { Writerbooks } from "@/app/lib/Action/Writerebook";
 import { WriterHistorybook } from "@/app/lib/Action/Writerhistorysales";
 import { userdata } from "@/app/lib/Action/Userinfo";
+import { useSession } from "@/app/lib/auth-client";
 
 const Writepage = () => {
+   const { data: session, isPending, error } = useSession();
   const [user, setUser] = useState(null);
   const [writerbook, setWriterbook] = useState([]);
   const [writerhistory, setWriterhistory] = useState([]);
@@ -23,9 +25,10 @@ const Writepage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+     
       try {
-        const userData = await userdata();
-        setUser(userData);
+      
+        setUser(session.user);
 
         if (userData?.id) {
           const [books, history] = await Promise.all([
