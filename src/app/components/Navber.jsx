@@ -18,6 +18,7 @@ import { useSession, signOut } from "../lib/auth-client";
 
 const Navbar = () => {
   const { data: session, isPending, error } = useSession();
+  console.log(session)
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -28,17 +29,7 @@ const Navbar = () => {
     setMounted(true);
   }, []);
 
-  // Debug logging
-  useEffect(() => {
-    if (mounted) {
-      console.log("=== Navbar Debug ===");
-      console.log("Session:", session);
-      console.log("Is Pending:", isPending);
-      console.log("Error:", error);
-      console.log("Session user:", session?.user);
-      console.log("Is Authenticated:", !!session?.user);
-    }
-  }, [session, isPending, error, mounted]);
+ 
 
   // Safe access
   const userRole = session?.user?.role || null;
@@ -63,13 +54,13 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", href: "/", icon: Home },
-    { name: "Browse Ebooks", href: "/browse", icon: Compass },
+    { name: "Browse Ebooks", href: "/browsersbooks", icon: Compass },
   ];
 
   const getDashboardLink = () => {
     if (userRole === "admin") return "/dashboard/admin";
     if (userRole === "writer") return "/dashboard/writer";
-    if (userRole === "user") return "/dashboard/user";
+    if (userRole === "user") return "/dashboard/reader";
     return "/dashboard";
   };
 
@@ -115,9 +106,9 @@ const Navbar = () => {
 
             {isAuthenticated && (
               <Link
-                href={getDashboardLink()}
+                href={`/Dashboard/${session.user.role}`}
                 className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  pathname.includes("/dashboard")
+                  pathname.includes(`/Dashboard/${session.user.role}`)
                     ? "text-indigo-600 bg-indigo-50"
                     : "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
                 }`}
@@ -189,7 +180,7 @@ const Navbar = () => {
                 href={getDashboardLink()}
                 onClick={() => setIsOpen(false)}
                 className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium ${
-                  pathname.includes("/dashboard")
+                  pathname.includes("/Dashboard/")
                     ? "text-indigo-600 bg-indigo-50"
                     : "text-gray-700 hover:text-indigo-600 hover:bg-indigo-50"
                 }`}

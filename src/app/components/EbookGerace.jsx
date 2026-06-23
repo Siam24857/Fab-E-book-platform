@@ -81,7 +81,7 @@ const EbookGenres = () => {
               whileTap={{ scale: 0.95 }}
             >
               <Link
-                href={`/browse?genre=${genre.name.toLowerCase()}`}
+                href={`/browsersbooks?genre=${genre.name}`}
                 className="block"
               >
                 <div
@@ -103,7 +103,7 @@ const EbookGenres = () => {
           className="text-center mt-10"
         >
           <Link
-            href="/browse"
+            href="/browsersbooks"
             className="text-indigo-600 hover:text-indigo-800 font-semibold inline-flex items-center"
           >
             Browse All Genres

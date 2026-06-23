@@ -7,3 +7,9 @@ export const allbookdata = async()=>{
      const data = await res.json()
      return data
 }
+
+export const Somebookdata = async()=>{
+     const respons = await fetch(`${servelurl}/somebooks`)
+     const datas = await respons.json()
+     return datas
+}

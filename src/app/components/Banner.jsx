@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, BookOpen, Users, Award } from "lucide-react";
+import { ArrowRight, BookOpen, Users, Award, Star } from "lucide-react";
+import Image from "next/image";
 
 const HeroBanner = () => {
   const stats = [
@@ -10,6 +11,13 @@ const HeroBanner = () => {
     { icon: Users, label: "Active Readers", value: "50,000+" },
     { icon: Award, label: "Top Writers", value: "500+" },
   ];
+
+  // Book image URLs - Replace with your actual images
+  const bookImages = {
+    story: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop",
+    adventure: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop",
+    featured: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&h=600&fit=crop",
+  };
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 min-h-[600px] flex items-center">
@@ -57,14 +65,14 @@ const HeroBanner = () => {
               className="flex flex-col sm:flex-row gap-4"
             >
               <Link
-                href="/browse"
+                href="/browsersbooks"
                 className="inline-flex items-center justify-center px-8 py-4 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-indigo-50 transition-all transform hover:scale-105 shadow-lg"
               >
                 Browse Ebooks
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Link>
               <Link
-                href="/register"
+                href="/Login"
                 className="inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-white text-white rounded-lg font-semibold hover:bg-white/10 transition-all"
               >
                 Start Reading
@@ -93,30 +101,53 @@ const HeroBanner = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="hidden lg:flex justify-center items-center"
+            className="flex flex-col items-center"
           >
+            {/* Main Book Picture with Floating Cards */}
             <div className="relative">
-              {/* Floating Book Cards */}
+              {/* Floating Book Cards (Decorative Background) */}
               <motion.div
                 animate={{ y: [0, -20, 0] }}
                 transition={{ repeat: Infinity, duration: 4 }}
-                className="absolute -top-10 -left-20 bg-white p-4 rounded-xl shadow-2xl transform rotate-[-10deg]"
+                className="absolute -top-10 -left-20 bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-2xl transform rotate-[-10deg] hidden xl:block"
               >
-                <div className="w-32 h-48 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg"></div>
-                <p className="text-sm font-semibold mt-2 text-center">The Story</p>
+                <div className="relative w-32 h-48 rounded-lg overflow-hidden">
+                  <Image
+                    src={bookImages.story}
+                    alt="The Story"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <p className="text-sm font-semibold mt-2 text-center text-gray-800">The Story</p>
               </motion.div>
 
               <motion.div
                 animate={{ y: [0, 20, 0] }}
                 transition={{ repeat: Infinity, duration: 5, delay: 1 }}
-                className="absolute -bottom-10 -right-20 bg-white p-4 rounded-xl shadow-2xl transform rotate-[10deg]"
+                className="absolute -bottom-10 -right-20 bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-2xl transform rotate-[10deg] hidden xl:block"
               >
-                <div className="w-32 h-48 bg-gradient-to-br from-pink-400 to-orange-500 rounded-lg"></div>
-                <p className="text-sm font-semibold mt-2 text-center">Adventure</p>
+                <div className="relative w-32 h-48 rounded-lg overflow-hidden">
+                  <Image
+                    src={bookImages.adventure}
+                    alt="Adventure"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <p className="text-sm font-semibold mt-2 text-center text-gray-800">Adventure</p>
               </motion.div>
 
+              {/* Main Book */}
               <div className="bg-white p-8 rounded-2xl shadow-2xl transform rotate-2">
-                <div className="w-48 h-64 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-lg shadow-xl"></div>
+                <div className="relative w-48 h-64 rounded-lg overflow-hidden shadow-xl">
+                  <Image
+                    src={bookImages.featured}
+                    alt="Featured Book"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
                 <div className="mt-4 text-center">
                   <p className="font-bold text-gray-800">Featured Book</p>
                   <p className="text-sm text-gray-600">By Jane Doe</p>

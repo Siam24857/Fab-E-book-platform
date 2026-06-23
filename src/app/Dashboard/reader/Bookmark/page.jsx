@@ -56,7 +56,7 @@ export default function BookmarkPage() {
                         <h2 className="text-2xl font-semibold text-stone-600 mb-2">No Bookmarks Yet</h2>
                         <p className="text-stone-500">Start bookmarking your favorite books!</p>
                         <Link 
-                            href="/"
+                            href="/browsersbooks"
                             className="inline-block mt-4 bg-red-700 text-white px-6 py-2 rounded-lg hover:bg-red-800 transition"
                         >
                             Browse Books
