@@ -1,7 +1,7 @@
-import { allUSerget } from '@/app/lib/Action/Adminacitons';
+import { allUSerget } from '@/app/Action/Adminacitons';
 import React from 'react';
 import Maneger from './Allmageuse';
-import { userseissondata } from '@/app/lib/Action/Userinfo';
+import { userseissondata } from '@/app/Action/Userinfo';
 
 const MAgeallsuer = async() => {
       const alluserdata = await allUSerget();

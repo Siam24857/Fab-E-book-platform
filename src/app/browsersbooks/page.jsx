@@ -1,6 +1,6 @@
 import React from 'react';
 import BookStore from './Allbrosewbooks';
-import { allbookdata } from '../lib/Action/ALlbooks';
+import { allbookdata } from '../Action/ALlbooks';
 
 const Brosersbooks = async ({ searchParams }) => {
   // Fix 1: No need to await searchParams in Next.js 15+ as it's already resolved

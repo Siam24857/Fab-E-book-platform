@@ -1,4 +1,4 @@
-import { useSession } from "../auth-client";
+import { useSession } from "../lib/auth-client";
 import { userseissondata } from "./Userinfo";
 
 export const tokenverify = async () => {

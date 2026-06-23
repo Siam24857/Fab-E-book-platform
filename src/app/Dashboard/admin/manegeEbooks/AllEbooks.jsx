@@ -5,8 +5,8 @@ import { Eye, EyeOff, Trash2 } from "lucide-react";
 import { redirect, useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bookuipdate } from "@/app/lib/Action/Adminacitons";
-import { BookDelete } from "@/app/lib/Action/Deletebook";
+import { Bookuipdate } from "@/app/Action/Adminacitons";
+import { BookDelete } from "@/app/Action/Deletebook";
 
 const AllEbooks = ({ token, allbookdatas }) => {
   const router = useRouter();

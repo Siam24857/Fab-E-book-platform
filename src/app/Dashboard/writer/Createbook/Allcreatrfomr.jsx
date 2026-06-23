@@ -24,7 +24,7 @@ import {
     Rocket
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
-import { creatcompnay } from '@/app/lib/Action/Creatfomr';
+import { creatcompnay } from '@/app/Action/Creatfomr';
 import { useSession } from '@/app/lib/auth-client';
 
 export default function EbookCreateForm({ token, companys, recuiterdata }) {

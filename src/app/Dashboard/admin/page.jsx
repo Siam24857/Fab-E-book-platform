@@ -1,5 +1,5 @@
-import { Historyget, USerget } from "@/app/lib/Action/Adminacitons";
-import { allbookdata } from "@/app/lib/Action/ALlbooks";
+import { Historyget, USerget } from "@/app/Action/Adminacitons";
+import { allbookdata } from "@/app/Action/ALlbooks";
 import DashboardCharts from "./Allcaht";
 import { motion } from "framer-motion";
 import { Toaster } from "react-hot-toast";
@@ -11,7 +11,7 @@ import {
   TrendingUp,
   Shield,
 } from "lucide-react";
-import { userseissondata } from "@/app/lib/Action/Userinfo";
+import { userseissondata } from "@/app/Action/Userinfo";
 
 const Adjminpage = async () => {
   const token = await userseissondata();

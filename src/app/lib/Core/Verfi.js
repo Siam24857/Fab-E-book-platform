@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { userdata } from "../Action/Userinfo";
+import { userdata } from "../../Action/Userinfo";
 
 export const getrole = async (role) =>{
     const userrole = await userdata();

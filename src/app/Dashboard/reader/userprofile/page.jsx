@@ -1,4 +1,4 @@
-import { userdata } from "@/app/lib/Action/Userinfo";
+import { userdata } from "@/app/Action/Userinfo";
 import { motion } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 

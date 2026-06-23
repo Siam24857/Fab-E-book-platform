@@ -1,7 +1,7 @@
 import React from 'react';
 import AllEbooks from './AllEbooks';
-import { allbookdata } from '@/app/lib/Action/ALlbooks';
-import { userseissondata } from '@/app/lib/Action/Userinfo';
+import { allbookdata } from '@/app/Action/ALlbooks';
+import { userseissondata } from '@/app/Action/Userinfo';
  
 
 const MAgeEbooks = async() => {

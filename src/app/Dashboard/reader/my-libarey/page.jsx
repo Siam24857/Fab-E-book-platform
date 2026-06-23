@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { userhistory, userseissondata } from "@/app/lib/Action/Userinfo";
+import { userhistory, userseissondata } from "@/app/Action/Userinfo";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";

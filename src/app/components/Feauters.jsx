@@ -1,5 +1,5 @@
 import { ArrowRight } from "lucide-react";
-import { Somebookdata } from "../lib/Action/ALlbooks";
+import { Somebookdata } from "../Action/ALlbooks";
 import Link from "next/link";
 import Image from "next/image";
 import toast, { Toaster } from 'react-hot-toast';

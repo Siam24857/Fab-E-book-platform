@@ -1,4 +1,4 @@
-import { userdata } from '@/app/lib/Action/Userinfo';
+import { userdata } from '@/app/Action/Userinfo';
 import React from 'react';
 import Editepaghe from './Alldata';
 

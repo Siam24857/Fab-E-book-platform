@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { PenLine, Eye, Trash2, PlusCircle } from "lucide-react";
-import { BookDelete } from "@/app/lib/Action/Deletebook";
+import { BookDelete } from "@/app/Action/Deletebook";
 import toast, { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 

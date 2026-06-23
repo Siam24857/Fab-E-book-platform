@@ -1,6 +1,6 @@
 
-import { userdata, userseissondata } from "@/app/lib/Action/Userinfo";
-import { WriterHistorybook } from "@/app/lib/Action/Writerhistorysales";
+import { userdata, userseissondata } from "@/app/Action/Userinfo";
+import { WriterHistorybook } from "@/app/Action/Writerhistorysales";
 
 import { TrendingUp } from "lucide-react";
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import BookDetailsPage from './Alldestails';
-import { bookdettails } from "@/app/lib/Action/Bookdettaislpage";
-import { Historybook } from "@/app/lib/Action/Historydata";
-import { userdata } from '@/app/lib/Action/Userinfo';
+import { bookdettails } from "@/app/Action/Bookdettaislpage";
+import { Historybook } from "@/app/Action/Historydata";
+import { userdata } from '@/app/Action/Userinfo';
 
 const Dettaislpage = async({params}) => {
      const {id} = await params

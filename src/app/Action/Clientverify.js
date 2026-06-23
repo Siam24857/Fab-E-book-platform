@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "../auth-client";
+import { useSession } from "../lib/auth-client";
 
 export const useClientToken = () => {
   const { data: session } = useSession();

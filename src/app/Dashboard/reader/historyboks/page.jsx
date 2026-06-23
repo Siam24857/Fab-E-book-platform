@@ -1,7 +1,8 @@
 // ./src/app/Dashboard/reader/historyboks/page.jsx
 // গুরুত্বপূর্ণ: এই ফাইলের শুরুতে "use client" থাকলে সেটি সরিয়ে ফেলুন
 
-import { userdata, userhistory, userseissondata } from "@/app/lib/Action/Userinfo";
+ 
+import { userdata, userhistory, userseissondata } from "@/app/Action/Userinfo";
 import PurchaseHistoryPage from "./PurchaseHistoryPage";
  
 

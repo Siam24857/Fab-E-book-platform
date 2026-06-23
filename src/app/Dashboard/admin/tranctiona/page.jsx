@@ -1,5 +1,5 @@
-import { Historyget } from "@/app/lib/Action/Adminacitons";
-import { userseissondata } from "@/app/lib/Action/Userinfo";
+import { Historyget } from "@/app/Action/Adminacitons";
+import { userseissondata } from "@/app/Action/Userinfo";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Toaster, toast } from "react-hot-toast";

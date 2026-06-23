@@ -1,7 +1,7 @@
 // ./src/app/Dashboard/writer/page.jsx (বা Allwrites/page.jsx)
-import { userdata } from '@/app/lib/Action/Userinfo';
-import { Writerbooks } from '@/app/lib/Action/Writerebook';
-import { WriterHistorybook } from '@/app/lib/Action/Writerhistorysales';
+import { userdata } from '@/app/Action/Userinfo';
+import { Writerbooks } from '@/app/Action/Writerebook';
+import { WriterHistorybook } from '@/app/Action/Writerhistorysales';
 import WriterClient from './Allwritedettails';
 
 const Allwrites = async () => {

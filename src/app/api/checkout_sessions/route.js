@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { stripe } from "@/app/lib/stripe";
-import { userdata } from "@/app/lib/Action/Userinfo";
+import { userdata } from "@/app/Action/Userinfo";
  
 
 export async function POST(request) {

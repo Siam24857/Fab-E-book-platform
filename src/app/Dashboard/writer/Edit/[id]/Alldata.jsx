@@ -25,8 +25,8 @@ import {
     RotateCcw
 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
-import { Updatekbooks } from '@/app/lib/Action/Updatebooks';
-import { userseissondata } from '@/app/lib/Action/Userinfo';
+import { Updatekbooks } from '@/app/Action/Updatebooks';
+import { userseissondata } from '@/app/Action/Userinfo';
 
 export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
     // Core State

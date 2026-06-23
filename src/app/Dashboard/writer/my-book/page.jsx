@@ -1,5 +1,5 @@
-import { userdata, userseissondata } from '@/app/lib/Action/Userinfo';
-import { Writerbooks } from '@/app/lib/Action/Writerebook';
+import { userdata, userseissondata } from '@/app/Action/Userinfo';
+import { Writerbooks } from '@/app/Action/Writerebook';
 import React from 'react';
 import Mybooks from './Allmybooks';
 

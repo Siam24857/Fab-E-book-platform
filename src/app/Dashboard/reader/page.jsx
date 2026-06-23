@@ -1,4 +1,4 @@
- import { userdata, userhistory, userseissondata } from '@/app/lib/Action/Userinfo';
+ import { userdata, userhistory, userseissondata } from '@/app/Action/Userinfo';
 import React from 'react';
 import Readerpage from './allreader';
  

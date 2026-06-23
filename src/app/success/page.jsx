@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { stripe } from '../lib/stripe'
 import Link from 'next/link'
 import { CheckCircle, Mail, ShoppingBag, ArrowLeft } from 'lucide-react'
-import { Booupdatehistory } from '../lib/Action/Historybooks'
+import { Booupdatehistory } from '../Action/Historybooks'
  
 
 export default async function Success({ searchParams }) {

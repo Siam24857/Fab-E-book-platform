@@ -1,11 +1,11 @@
 "use client";
 
-import { Userupdate } from "@/app/lib/Action/Adminacitons";
+import { Userupdate } from "@/app/Action/Adminacitons";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookDelete } from "@/app/lib/Action/Deletebook";
+import { BookDelete } from "@/app/Action/Deletebook";
 
 const Maneger = ({ token, alluserdata }) => {
   const router = useRouter();
