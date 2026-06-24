@@ -276,7 +276,7 @@ export default function PurchasedBooks() {
                 >
                   <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300">
                     <Link
-                      href={`/Dashboard/reader/${book.productId}`}
+                      href={`/bookdeattailspage/${book.productId}`}
                       className="block"
                     >
                       <div className="relative overflow-hidden bg-[#f5f1ed]">

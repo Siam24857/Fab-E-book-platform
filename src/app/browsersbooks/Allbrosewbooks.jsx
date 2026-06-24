@@ -51,27 +51,85 @@ export default function BookStore({ BOOKS }) {
     }
   });
 
-  // Filter books
+  // Filter books - EXCLUDE DRAFT BOOKS
   const filtered = useMemo(() => {
+    // Start with BOOKS and filter out drafts
     let list = [...BOOKS];
+    
+    // 🔥 EXCLUDE DRAFT BOOKS
+    list = list.filter((b) => {
+      // Check if book has a status field and it's not "draft"
+      // Case insensitive check
+      const status = b?.status?.toLowerCase() || b?.bookStatus?.toLowerCase() || "";
+      const isDraft = status === "draft" || status === "drafted";
+      
+      // Also check if book has a publishedAt or isPublished flag
+      const isPublished = b?.isPublished === true || b?.published === true;
+      
+      // Show book if it's not a draft AND (it's published OR there's no status field)
+      // This ensures backward compatibility with books that don't have status field
+      if (!b?.status && !b?.bookStatus) {
+        // If no status field, assume it's published (for backward compatibility)
+        return true;
+      }
+      
+      // If it has status field, only show if not draft
+      // Or if it has isPublished flag, only show if true
+      if (b?.isPublished !== undefined) {
+        return isPublished && !isDraft;
+      }
+      
+      return !isDraft;
+    });
 
+    // Apply search filter
     if (search.trim()) {
       const q = search.toLowerCase();
       list = list.filter(
         (b) =>
           (b.title?.toLowerCase() || "").includes(q) ||
-          (b.writer?.toLowerCase() || "").includes(q)
+          (b.writer?.toLowerCase() || "").includes(q) ||
+          (b.author?.toLowerCase() || "").includes(q)
       );
     }
 
-    if (genre !== "All Genres") list = list.filter((b) => b.genre === genre);
+    // Apply genre filter
+    if (genre !== "All Genres") {
+      list = list.filter((b) => {
+        const bookGenre = b.genre || b.category || "";
+        return bookGenre === genre;
+      });
+    }
 
-    if (applied.min !== "") list = list.filter((b) => b.price >= parseFloat(applied.min));
-    if (applied.max !== "") list = list.filter((b) => b.price <= parseFloat(applied.max));
+    // Apply price filters
+    if (applied.min !== "") {
+      list = list.filter((b) => {
+        const price = b.price || b.amount || 0;
+        return price >= parseFloat(applied.min);
+      });
+    }
+    if (applied.max !== "") {
+      list = list.filter((b) => {
+        const price = b.price || b.amount || 0;
+        return price <= parseFloat(applied.max);
+      });
+    }
 
-    if (sort === "price_asc") list.sort((a, b) => (a.price || 0) - (b.price || 0));
-    if (sort === "price_desc") list.sort((a, b) => (b.price || 0) - (a.price || 0));
-    if (sort === "title_asc") list.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    // Apply sorting
+    if (sort === "price_asc") {
+      list.sort((a, b) => ((a.price || a.amount || 0) - (b.price || b.amount || 0)));
+    } else if (sort === "price_desc") {
+      list.sort((a, b) => ((b.price || b.amount || 0) - (a.price || a.amount || 0)));
+    } else if (sort === "title_asc") {
+      list.sort((a, b) => ((a.title || "").localeCompare(b.title || "")));
+    } else if (sort === "newest") {
+      // Sort by createdAt or publishedAt
+      list.sort((a, b) => {
+        const dateA = new Date(a.createdAt || a.publishedAt || a.date || 0);
+        const dateB = new Date(b.createdAt || b.publishedAt || b.date || 0);
+        return dateB - dateA;
+      });
+    }
 
     return list;
   }, [search, genre, sort, applied, BOOKS]);
@@ -155,6 +213,9 @@ export default function BookStore({ BOOKS }) {
     setApplied({ min: minPrice, max: maxPrice });
     toast.success('Price filter applied');
   };
+
+  // Debug - log how many books are being shown vs total
+  console.log(`Total books: ${BOOKS.length}, Published: ${filtered.length}`);
 
   return (
     <div className="min-h-screen bg-white" style={{ fontFamily: "'Inter', sans-serif" }}>
@@ -280,6 +341,11 @@ export default function BookStore({ BOOKS }) {
               >
                 Apply
               </button>
+              
+              {/* Show count of available books */}
+              <div className="mt-3 text-xs text-gray-500 text-center">
+                {filtered.length} book{filtered.length !== 1 ? 's' : ''} available
+              </div>
             </div>
           </div>
         </aside>
@@ -288,8 +354,13 @@ export default function BookStore({ BOOKS }) {
         <main className="flex-1 min-w-0">
           {paginatedBooks.length === 0 ? (
             <div className="text-center py-16">
+              <div className="text-6xl mb-4">📚</div>
               <p className="text-xl font-semibold text-gray-600 mb-2">No books found</p>
-              <p className="text-gray-500">Try adjusting your search or filters.</p>
+              <p className="text-gray-500">
+                {filtered.length === 0 && BOOKS.length > 0 
+                  ? "All books are currently in draft mode. Check back later!"
+                  : "Try adjusting your search or filters."}
+              </p>
             </div>
           ) : (
             <>
@@ -309,6 +380,9 @@ export default function BookStore({ BOOKS }) {
                             src={coverSrc}
                             alt={title}
                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            onError={(e) => {
+                              e.target.src = '/placeholder-book-cover.jpg'; // Add a placeholder image
+                            }}
                           />
                         </div>
                         <div className="p-2 sm:p-3">
@@ -317,7 +391,7 @@ export default function BookStore({ BOOKS }) {
                           <div className="flex items-center justify-between mt-1.5">
                             <span className="text-sm font-bold">${price.toFixed(2)}</span>
                             <span className="text-[10px] font-medium px-2 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-600 truncate max-w-[60px]">
-                              {book.genre || "General"}
+                              {book.genre || book.category || "General"}
                             </span>
                           </div>
                         </div>
