@@ -167,7 +167,7 @@ export default async function Success({ searchParams }) {
               Back to Store
             </Link>
             <Link
-              href={productId ? `/bookdetailspage/${productId}` : '/orders'}
+              href={productId ? `/bookdeattailspage/${productId}` : '/orders'}
               className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl text-sm sm:text-base"
             >
               <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />

@@ -276,7 +276,7 @@ export default function PurchasedBooks() {
                 >
                   <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300">
                     <Link
-                      href={`/reader/${book.productId}`}
+                      href={`/Dashboard/reader/${book.productId}`}
                       className="block"
                     >
                       <div className="relative overflow-hidden bg-[#f5f1ed]">
@@ -397,7 +397,7 @@ export default function PurchasedBooks() {
                 whileTap={{ scale: 0.95 }}
               >
                 <Link
-                  href="/books"
+                  href="/browsersbooks"
                   className="inline-block px-6 sm:px-8 py-2.5 sm:py-3 bg-[#8b6f5a] text-white rounded-lg hover:bg-[#6b5544] transition shadow-lg hover:shadow-xl text-sm sm:text-base"
                 >
                   Explore Books
