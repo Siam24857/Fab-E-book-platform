@@ -141,7 +141,7 @@ export function Dashboradlayout({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex lg:min-h-screen bg-background">
       <Toaster 
         position="top-right"
         toastOptions={{

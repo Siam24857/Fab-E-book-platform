@@ -252,7 +252,7 @@ const Navbar = () => {
                       className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 py-2 z-50"
                     >
                       <Link
-                        href="/profile"
+                        href={`/Dashboard/${session.user.role}/userprofile`}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"
                         onClick={() => setShowUserMenu(false)}
                       >

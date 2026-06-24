@@ -89,16 +89,10 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     setLoading(true);
     setError("");
-
-    try {
       await authClient.signIn.social({
         provider: "google",
         callbackURL: "/Dashboard/reader",
       });
-    } catch (err) {
-      setError("Google sign-in could not be started. Please try again.");
-      setLoading(false);
-    }
   };
 
   // Animation variants
