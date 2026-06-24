@@ -49,7 +49,7 @@ const AllEbooks = ({ token, allbookdatas }) => {
         });
         
         // Refresh the page to get fresh data from server
-        router.refresh();
+        router.push("/Dashboard/admin/manegeEbooks");
       } else {
         toast.error(bookupdate?.message || "Failed to update book status", {
           duration: 4000,
@@ -108,7 +108,7 @@ const AllEbooks = ({ token, allbookdatas }) => {
         });
         
         // Refresh the page to get fresh data from server
-        router.refresh();
+        router.push("/Dashboard/admin/manegeEbooks");
       } else {
         toast.error(data?.message || "Failed to delete book", {
           duration: 4000,
