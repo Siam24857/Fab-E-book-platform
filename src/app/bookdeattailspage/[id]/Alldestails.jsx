@@ -1,11 +1,52 @@
 "use client";
 
 import { Bookmarkbooks } from "@/app/Action/Bookmarkfuctionalyti";
-import { Calendar, Tag, User, Bookmark, Lock } from "lucide-react";
+import { Calendar, Tag, User, Bookmark, Lock, Shield, PenLine, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 
-export default function BookDetailsPage({ book, paymented, userId }) {
+export default function BookDetailsPage({ book, paymented, userId, userRole }) {
+    // ✅ Extract book data from wrapped response
+    const extractBookData = (data) => {
+        if (data && typeof data === 'object') {
+            if (data.success && data.data && typeof data.data === 'object') {
+                return data.data;
+            }
+            if (data.data && typeof data.data === 'object') {
+                return data.data;
+            }
+            if (data._id || data.id || data.title) {
+                return data;
+            }
+        }
+        return data || {};
+    };
+
+    const rawBook = extractBookData(book);
+
+    // ✅ Safe book data extraction with fallbacks
+    const safeBook = {
+        _id: rawBook?._id || rawBook?.productId || rawBook?.id || '',
+        title: rawBook?.title || rawBook?.booktitle || 'Untitled Book',
+        cover: rawBook?.cover || rawBook?.coverimg || rawBook?.image || '/default-cover.jpg',
+        author: rawBook?.author || rawBook?.writer || rawBook?.writerName || 'Unknown Author',
+        genre: rawBook?.genre || rawBook?.category || 'General',
+        price: rawBook?.price || rawBook?.amount || 0,
+        description: rawBook?.description || rawBook?.desc || 'No description available.',
+        status: rawBook?.status || rawBook?.availability || 'Available',
+        publishedAt: rawBook?.publishedAt || rawBook?.createdAt || rawBook?.date || new Date().toISOString(),
+        content: rawBook?.content || rawBook?.bookContent || 'Content not available.',
+        writerId: rawBook?.writerId || rawBook?.writer || rawBook?.authorId || ''
+    };
+
+    // ✅ Check if user is writer or admin
+    const isWriterOrAdmin = userRole === 'writer' || userRole === 'admin';
+    const isAdmin = userRole === 'admin';
+    const isWriter = userRole === 'writer';
+    
+    // ✅ Determine if user can view content
+    const canViewContent = isWriterOrAdmin || paymented;
+
     // State for bookmark
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -14,38 +55,41 @@ export default function BookDetailsPage({ book, paymented, userId }) {
     // Load bookmark status from localStorage on mount
     useEffect(() => {
         const checkBookmarkStatus = () => {
-            // Check localStorage for bookmarks
-            const savedBookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-            const isBookmarkedInStorage = savedBookmarks.some(b => b.bookId === book._id);
-            
-            if (isBookmarkedInStorage) {
-                setIsBookmarked(true);
-                // Find the bookmark to get its ID
-                const bookmark = savedBookmarks.find(b => b.bookId === book._id);
-                if (bookmark) {
-                    setBookmarkId(bookmark._id || 'local');
+            try {
+                const savedBookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+                const isBookmarkedInStorage = savedBookmarks.some(b => b.bookId === safeBook._id);
+                
+                if (isBookmarkedInStorage) {
+                    setIsBookmarked(true);
+                    const bookmark = savedBookmarks.find(b => b.bookId === safeBook._id);
+                    if (bookmark) {
+                        setBookmarkId(bookmark._id || 'local');
+                    }
+                } else {
+                    setIsBookmarked(false);
+                    setBookmarkId(null);
                 }
-            } else {
+            } catch (error) {
+                console.error('Error checking bookmark status:', error);
                 setIsBookmarked(false);
                 setBookmarkId(null);
             }
         };
 
-        checkBookmarkStatus();
-    }, [book._id]);
+        if (safeBook._id) {
+            checkBookmarkStatus();
+        }
+    }, [safeBook._id]);
 
     // Save to localStorage function
     const saveBookmarkToLocalStorage = (bookData) => {
         try {
             const savedBookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-            
-            // Check if already exists
             const exists = savedBookmarks.some(b => b.bookId === bookData.bookId);
             
             if (!exists) {
-                // Add new bookmark
                 const newBookmark = {
-                    _id: Date.now().toString(), // Temporary ID
+                    _id: Date.now().toString(),
                     bookId: bookData.bookId,
                     userId: bookData.userId,
                     title: bookData.title,
@@ -84,13 +128,16 @@ export default function BookDetailsPage({ book, paymented, userId }) {
             return;
         }
 
+        if (!safeBook._id) {
+            toast.error('Invalid book data');
+            return;
+        }
+
         setLoading(true);
 
         try {
             if (isBookmarked) {
-                // Remove bookmark from localStorage
-                const removed = removeBookmarkFromLocalStorage(book._id);
-                
+                const removed = removeBookmarkFromLocalStorage(safeBook._id);
                 if (removed) {
                     setIsBookmarked(false);
                     setBookmarkId(null);
@@ -99,17 +146,15 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                     toast.error('Failed to remove bookmark');
                 }
             } else {
-                // Add bookmark to localStorage first
                 const bookmarkData = {
                     userId: userId,
-                    bookId: book._id,
-                    title: book.title,
-                    image: book.cover,
-                    price: book.price,
+                    bookId: safeBook._id,
+                    title: safeBook.title,
+                    image: safeBook.cover,
+                    price: safeBook.price,
                     bookmarkedAt: new Date().toISOString()
                 };
 
-                // Save to localStorage
                 const localBookmark = saveBookmarkToLocalStorage(bookmarkData);
                 
                 if (localBookmark) {
@@ -117,7 +162,6 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                     setBookmarkId(localBookmark._id);
                     toast.success('Bookmark added successfully');
                     
-                    // Also try to save to database (optional)
                     try {
                         const dbResult = await Bookmarkbooks(bookmarkData);
                         console.log('Database save result:', dbResult);
@@ -133,6 +177,23 @@ export default function BookDetailsPage({ book, paymented, userId }) {
             toast.error('An error occurred. Please try again.');
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Format date for display
+    const formatDate = (dateString) => {
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                return 'N/A';
+            }
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        } catch (error) {
+            return 'N/A';
         }
     };
 
@@ -169,36 +230,53 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                     {/* Cover - Responsive */}
                     <div className="max-w-[280px] sm:max-w-[320px] mx-auto lg:mx-0 w-full">
                         <img
-                            src={book.cover}
-                            alt={book.title}
+                            src={safeBook.cover}
+                            alt={safeBook.title}
                             className="w-full rounded-sm object-cover shadow-sm"
+                            onError={(e) => {
+                                e.target.src = '/default-cover.jpg';
+                            }}
                         />
                     </div>
 
                     {/* Details - Responsive */}
                     <div>
-                        <span className="inline-block bg-stone-200 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium">
-                            {book.genre}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="inline-block bg-stone-200 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium">
+                                {safeBook.genre}
+                            </span>
+                            
+                            {/* ✅ Role Badge - Show if user is writer or admin */}
+                            {isWriterOrAdmin && (
+                                <span className={`inline-flex items-center gap-1 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium ${
+                                    isAdmin 
+                                        ? 'bg-purple-100 text-purple-800' 
+                                        : 'bg-amber-100 text-amber-800'
+                                }`}>
+                                    {isAdmin ? <Shield size={14} /> : <PenLine size={14} />}
+                                    {isAdmin ? 'Admin' : 'Writer'}
+                                </span>
+                            )}
+                        </div>
 
                         <h1 className="mt-4 sm:mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 leading-tight">
-                            {book.title}
+                            {safeBook.title}
                         </h1>
 
                         <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 text-sm sm:text-base text-stone-600">
                             <div className="flex items-center gap-1.5 sm:gap-2">
                                 <User size={16} className="sm:w-[18px] sm:h-[18px]" />
-                                <span>{book.author}</span>
+                                <span>{safeBook.author}</span>
                             </div>
 
                             <div className="flex items-center gap-1.5 sm:gap-2">
                                 <Calendar size={16} className="sm:w-[18px] sm:h-[18px]" />
-                                <span>{book.publishedAt}</span>
+                                <span>{formatDate(safeBook.publishedAt)}</span>
                             </div>
 
                             <div className="flex items-center gap-1.5 sm:gap-2">
                                 <Tag size={16} className="sm:w-[18px] sm:h-[18px]" />
-                                <span>{book.status}</span>
+                                <span>{safeBook.status}</span>
                             </div>
                         </div>
 
@@ -209,26 +287,44 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                         </h2>
 
                         <p className="max-w-4xl text-base sm:text-lg leading-7 sm:leading-9 text-stone-700">
-                            {book.description}
+                            {safeBook.description}
                         </p>
 
                         {/* Actions - Responsive */}
                         <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 sm:gap-5">
                             <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900">
-                                ${book.price}
+                                ${Number(safeBook.price).toFixed(2)}
                             </span>
 
-                            {paymented ? (
-                                <button className="bg-red-700 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white transition hover:bg-red-800 w-full sm:w-auto">
-                                    Already Available for you 
+                            {/* ✅ Hide Buy button for writers and admins */}
+                            {isWriterOrAdmin ? (
+                                // ✅ Show message for writers and admins - NO Buy button
+                                <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
+                                    <div className="bg-gray-200 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-gray-600 w-full sm:w-auto cursor-not-allowed opacity-70">
+                                        <span className="flex items-center gap-2">
+                                            <Eye size={20} />
+                                            {isAdmin ? '🔒 Admin Access Only' : '✏️ Writer Access Only'}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-gray-500 italic">
+                                        {isAdmin 
+                                            ? 'Admins can view content but cannot purchase' 
+                                            : 'Writers can view content but cannot purchase'}
+                                    </p>
+                                </div>
+                            ) : paymented ? (
+                                // ✅ Regular user who purchased
+                                <button className="bg-green-700 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white transition hover:bg-green-800 w-full sm:w-auto cursor-default">
+                                    ✅ Already Purchased
                                 </button>
                             ) : (
+                                // ✅ Regular user who hasn't purchased
                                 <form action="/api/checkout_sessions" method="POST" className="w-full sm:w-auto">
-                                    <input type="hidden" name="price" defaultValue={book.price} />
-                                    <input type="hidden" name="productid" defaultValue={book._id} />
-                                    <input type="hidden" name="image" defaultValue={book.cover} />
-                                    <input type="hidden" name="title" defaultValue={book.title} />
-                                    <input type="hidden" name="writerid" defaultValue={book?.writerId} />
+                                    <input type="hidden" name="price" defaultValue={safeBook.price} />
+                                    <input type="hidden" name="productid" defaultValue={safeBook._id} />
+                                    <input type="hidden" name="image" defaultValue={safeBook.cover} />
+                                    <input type="hidden" name="title" defaultValue={safeBook.title} />
+                                    <input type="hidden" name="writerid" defaultValue={safeBook.writerId} />
                                     <section>
                                         <button 
                                             type="submit" 
@@ -241,10 +337,10 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                                 </form>
                             )}
 
-                            {/* Bookmark Toggle Button */}
+                            {/* Bookmark Toggle Button - Available for all roles */}
                             <button
                                 onClick={toggleBookmark}
-                                disabled={loading}
+                                disabled={loading || !safeBook._id}
                                 className={`border border-stone-300 p-3 sm:p-4 transition hover:bg-stone-200 ${
                                     isBookmarked 
                                         ? 'bg-stone-800 text-white hover:bg-stone-700' 
@@ -262,17 +358,40 @@ export default function BookDetailsPage({ book, paymented, userId }) {
 
                         <hr className="my-8 sm:my-10 border-stone-300" />
 
-                        {/* Content Section - Responsive */}
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 border border-stone-300 bg-stone-50 p-4 sm:p-6 text-stone-700">
-                            <Lock size={20} className="sm:w-[24px] sm:h-[24px]" />
-                            {paymented ? (
-                                <p className="text-base sm:text-lg break-words">
-                                    {book.content}
-                                </p>
+                        {/* ✅ Content Section - Show full content for writers/admins and paying users */}
+                        <div className={`flex flex-col items-start gap-3 sm:gap-4 border p-4 sm:p-6 ${
+                            canViewContent 
+                                ? 'border-green-300 bg-green-50' 
+                                : 'border-stone-300 bg-stone-50'
+                        }`}>
+                            <div className="flex items-center gap-3">
+                                <Lock size={20} className="sm:w-[24px] sm:h-[24px] flex-shrink-0" />
+                                <span className="font-semibold text-sm sm:text-base">
+                                    {canViewContent ? '📖 Full Content' : '🔒 Content Locked'}
+                                </span>
+                            </div>
+                            
+                            {canViewContent ? (
+                                <div className="w-full">
+                                    {/* ✅ Show preview notice for writers/admins */}
+                                    {isWriterOrAdmin && !paymented && (
+                                        <div className="mb-3 p-2 bg-amber-50 border border-amber-200 rounded text-amber-700 text-sm">
+                                            <span className="font-semibold">👁️ Preview Mode:</span> You can view the full content as {isAdmin ? 'an Admin' : 'a Writer'}.
+                                        </div>
+                                    )}
+                                    <div className="text-base sm:text-lg leading-7 text-stone-700 whitespace-pre-wrap">
+                                        {safeBook.content}
+                                    </div>
+                                </div>
                             ) : (
-                                <p className="text-base sm:text-lg">
-                                    Purchase this ebook to read the full content.
-                                </p>
+                                <div className="w-full text-center py-6">
+                                    <p className="text-base sm:text-lg text-gray-500">
+                                        Purchase this ebook to read the full content.
+                                    </p>
+                                    <p className="text-sm text-gray-400 mt-2">
+                                        Click the Buy Now button above to unlock.
+                                    </p>
+                                </div>
                             )}
                         </div>
                     </div>
