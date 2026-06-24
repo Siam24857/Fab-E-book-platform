@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function BookDetailsPage({ book, paymented, userId, userRole }) {
+    console.log(paymented, userRole);
+    
     // ✅ Extract book data from wrapped response
     const extractBookData = (data) => {
         if (data && typeof data === 'object') {
@@ -39,13 +41,56 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         writerId: rawBook?.writerId || rawBook?.writer || rawBook?.authorId || ''
     };
 
+    // ✅ FIXED: Check if user has actually purchased (not just truthy object)
+    const hasPurchased = (() => {
+        // If paymented is a boolean, use it directly
+        if (typeof paymented === 'boolean') {
+            return paymented;
+        }
+        // If paymented is an object with success/data structure
+        if (paymented && typeof paymented === 'object') {
+            // Check if it's a successful response with data
+            if (paymented.success && paymented.data) {
+                // If data is an array, check if it has items
+                if (Array.isArray(paymented.data)) {
+                    return paymented.data.length > 0;
+                }
+                // If data is an object, it means there's a purchase
+                if (typeof paymented.data === 'object' && paymented.data !== null) {
+                    return true;
+                }
+                return false;
+            }
+            // If it has count property, check if count > 0
+            if (paymented.count !== undefined) {
+                return paymented.count > 0;
+            }
+            // Check if it's an array
+            if (Array.isArray(paymented)) {
+                return paymented.length > 0;
+            }
+            // If it's an object with _id or id, it's a purchase
+            if (paymented._id || paymented.id) {
+                return true;
+            }
+            return false;
+        }
+        // If paymented is null, undefined, or false
+        return false;
+    })();
+
     // ✅ Check if user is writer or admin
     const isWriterOrAdmin = userRole === 'writer' || userRole === 'admin';
     const isAdmin = userRole === 'admin';
     const isWriter = userRole === 'writer';
+    const isReader = userRole === 'reader' || !userRole;
     
-    // ✅ Determine if user can view content
-    const canViewContent = isWriterOrAdmin || paymented;
+    // ✅ Determine if user can view content (only if purchased OR writer/admin)
+    const canViewContent = isWriterOrAdmin || hasPurchased;
+
+    console.log('hasPurchased:', hasPurchased);
+    console.log('canViewContent:', canViewContent);
+    console.log('isWriterOrAdmin:', isWriterOrAdmin);
 
     // State for bookmark
     const [isBookmarked, setIsBookmarked] = useState(false);
@@ -257,6 +302,11 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                                     {isAdmin ? 'Admin' : 'Writer'}
                                 </span>
                             )}
+                            {isReader && hasPurchased && (
+                                <span className="inline-flex items-center gap-1 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium bg-green-100 text-green-800">
+                                    ✅ Purchased
+                                </span>
+                            )}
                         </div>
 
                         <h1 className="mt-4 sm:mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 leading-tight">
@@ -296,29 +346,8 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                                 ${Number(safeBook.price).toFixed(2)}
                             </span>
 
-                            {/* ✅ Hide Buy button for writers and admins */}
-                            {isWriterOrAdmin ? (
-                                // ✅ Show message for writers and admins - NO Buy button
-                                <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
-                                    <div className="bg-gray-200 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-gray-600 w-full sm:w-auto cursor-not-allowed opacity-70">
-                                        <span className="flex items-center gap-2">
-                                            <Eye size={20} />
-                                            {isAdmin ? '🔒 Admin Access Only' : '✏️ Writer Access Only'}
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-gray-500 italic">
-                                        {isAdmin 
-                                            ? 'Admins can view content but cannot purchase' 
-                                            : 'Writers can view content but cannot purchase'}
-                                    </p>
-                                </div>
-                            ) : paymented ? (
-                                // ✅ Regular user who purchased
-                                <button className="bg-green-700 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white transition hover:bg-green-800 w-full sm:w-auto cursor-default">
-                                    ✅ Already Purchased
-                                </button>
-                            ) : (
-                                // ✅ Regular user who hasn't purchased
+                            {/* ✅ Show Buy button ONLY for readers who haven't purchased */}
+                            {isReader && !hasPurchased ? (
                                 <form action="/api/checkout_sessions" method="POST" className="w-full sm:w-auto">
                                     <input type="hidden" name="price" defaultValue={safeBook.price} />
                                     <input type="hidden" name="productid" defaultValue={safeBook._id} />
@@ -335,6 +364,26 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                                         </button>
                                     </section>
                                 </form>
+                            ) : isReader && hasPurchased ? (
+                                // ✅ Reader who purchased
+                                <button className="bg-green-700 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white transition hover:bg-green-800 w-full sm:w-auto cursor-default">
+                                    ✅ Already Purchased
+                                </button>
+                            ) : (
+                                // ✅ Writer or Admin - No Buy button
+                                <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
+                                    <div className="bg-gray-200 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-gray-600 w-full sm:w-auto cursor-not-allowed opacity-70">
+                                        <span className="flex items-center gap-2">
+                                            <Eye size={20} />
+                                            {isAdmin ? '🔒 Admin Access Only' : '✏️ Writer Access Only'}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-gray-500 italic">
+                                        {isAdmin 
+                                            ? 'Admins can view content but cannot purchase' 
+                                            : 'Writers can view content but cannot purchase'}
+                                    </p>
+                                </div>
                             )}
 
                             {/* Bookmark Toggle Button - Available for all roles */}
@@ -358,7 +407,7 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
 
                         <hr className="my-8 sm:my-10 border-stone-300" />
 
-                        {/* ✅ Content Section - Show full content for writers/admins and paying users */}
+                        {/* ✅ Content Section */}
                         <div className={`flex flex-col items-start gap-3 sm:gap-4 border p-4 sm:p-6 ${
                             canViewContent 
                                 ? 'border-green-300 bg-green-50' 
@@ -374,7 +423,7 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                             {canViewContent ? (
                                 <div className="w-full">
                                     {/* ✅ Show preview notice for writers/admins */}
-                                    {isWriterOrAdmin && !paymented && (
+                                    {isWriterOrAdmin && !hasPurchased && (
                                         <div className="mb-3 p-2 bg-amber-50 border border-amber-200 rounded text-amber-700 text-sm">
                                             <span className="font-semibold">👁️ Preview Mode:</span> You can view the full content as {isAdmin ? 'an Admin' : 'a Writer'}.
                                         </div>
