@@ -7,22 +7,46 @@ import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 
 const WriterClient = ({ user, books, salesHistory }) => {
-  const normalizedBooks = Array.isArray(books)
-    ? books
-    : Array.isArray(books?.books)
-      ? books.books
-      : [];
+  // ✅ Fixed: Extract data from wrapped response
+  const extractData = (data) => {
+    // If it's already an array, return it
+    if (Array.isArray(data)) {
+      return data;
+    }
+    // If it's the wrapped response object with data property
+    if (data && typeof data === 'object') {
+      // Check for success/data structure
+      if (data.success && Array.isArray(data.data)) {
+        return data.data;
+      }
+      // Check for just data property
+      if (data.data && Array.isArray(data.data)) {
+        return data.data;
+      }
+      // Check if the object itself is the data array wrapped in an object with numeric keys
+      const values = Object.values(data);
+      if (values.length > 0 && Array.isArray(values[0])) {
+        return values[0];
+      }
+      // If it's an object with books property (legacy support)
+      if (data.books && Array.isArray(data.books)) {
+        return data.books;
+      }
+      // If it's an object with sales property (legacy support)
+      if (data.sales && Array.isArray(data.sales)) {
+        return data.sales;
+      }
+    }
+    return [];
+  };
 
-  const normalizedSalesHistory = Array.isArray(salesHistory)
-    ? salesHistory
-    : Array.isArray(salesHistory?.sales)
-      ? salesHistory.sales
-      : [];
+  const normalizedBooks = extractData(books);
+  const normalizedSalesHistory = extractData(salesHistory);
 
   const totalBooks = normalizedBooks.length;
-  const publishedBooks = normalizedBooks.filter((book) => book?.status === "Available").length || totalBooks;
+  const publishedBooks = normalizedBooks.filter((book) => book?.status === "Available").length || 0;
   const totalSales = normalizedSalesHistory.length;
-  const revenue = normalizedSalesHistory.reduce((total, sale) => total + Number(sale?.price || 0), 0);
+  const revenue = normalizedSalesHistory.reduce((total, sale) => total + Number(sale?.amount || sale?.price || 0), 0);
 
   const stats = [
     { title: "Total Ebooks", value: totalBooks, icon: BookOpen, color: "from-blue-500 to-blue-600" },

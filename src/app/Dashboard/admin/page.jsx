@@ -19,27 +19,40 @@ const Adjminpage = async () => {
     const [Userdata, writerdata, bookhistory, allbooks] = await Promise.all([
       USerget("reader").catch(err => {
         console.error("Error fetching readers:", err);
-        return [];
+        return { data: [] };
       }),
       USerget("writer").catch(err => {
         console.error("Error fetching writers:", err);
-        return [];
+        return { data: [] };
       }),
       Historyget(token).catch(err => {
         console.error("Error fetching history:", err);
-        return [];
+        return { data: [] };
       }),
       allbookdata().catch(err => {
         console.error("Error fetching books:", err);
-        return [];
+        return { data: [] };
       })
     ]);
 
-    // Ensure all data is arrays
-    const safeUserdata = Array.isArray(Userdata) ? Userdata : [];
-    const safeWriterdata = Array.isArray(writerdata) ? writerdata : [];
-    const safeBookhistory = Array.isArray(bookhistory) ? bookhistory : [];
-    const safeAllbooks = Array.isArray(allbooks) ? allbooks : [];
+    // Extract data from response objects
+    const extractData = (response) => {
+      if (response && response.success && Array.isArray(response.data)) {
+        return response.data;
+      }
+      if (response && response.data && Array.isArray(response.data)) {
+        return response.data;
+      }
+      if (Array.isArray(response)) {
+        return response;
+      }
+      return [];
+    };
+
+    const safeUserdata = extractData(Userdata);
+    const safeWriterdata = extractData(writerdata);
+    const safeBookhistory = extractData(bookhistory);
+    const safeAllbooks = extractData(allbooks);
 
     // Total Revenue with safe calculation
     const totalRevenue = safeBookhistory.reduce(
@@ -197,12 +210,12 @@ const Adjminpage = async () => {
           <p className="text-gray-600 mb-4">
             There was an error loading the admin dashboard. Please try again later.
           </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          <a
+            href="?refresh=true"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors inline-block"
           >
             Retry
-          </button>
+          </a>
         </div>
       </div>
     );

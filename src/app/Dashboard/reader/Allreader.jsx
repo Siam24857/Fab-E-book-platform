@@ -20,6 +20,31 @@ const Readerpage = ({ historyData = [] }) => {
   const [loading, setLoading] = useState(true);
   const [isCRUDLoading, setIsCRUDLoading] = useState(false);
 
+  // ✅ Fixed: Extract data from wrapped response
+  const extractHistoryData = (data) => {
+    // If it's already an array, return it
+    if (Array.isArray(data)) {
+      return data;
+    }
+    // If it's the wrapped response object with data property
+    if (data && typeof data === 'object') {
+      // Check for success/data structure
+      if (data.success && Array.isArray(data.data)) {
+        return data.data;
+      }
+      // Check for just data property
+      if (data.data && Array.isArray(data.data)) {
+        return data.data;
+      }
+      // Check if the object itself is the data array wrapped in an object with numeric keys
+      const values = Object.values(data);
+      if (values.length > 0 && Array.isArray(values[0])) {
+        return values[0];
+      }
+    }
+    return [];
+  };
+
   console.log(history);
 
   // Fetch data on mount
@@ -33,12 +58,9 @@ const Readerpage = ({ historyData = [] }) => {
           setUser(null);
         }
         
-        // ✅ Fixed: Ensure historyData is an array
-        if (Array.isArray(historyData)) {
-          setHistory(historyData);
-        } else {
-          setHistory([]);
-        }
+        // ✅ Fixed: Extract data from wrapped response
+        const extractedHistory = extractHistoryData(historyData);
+        setHistory(extractedHistory);
         
         // Only show toast if we have data
         if (session?.user) {

@@ -8,8 +8,33 @@ import toast, { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
 const Mybooks = ({ token, writerbook = [] }) => {
+  // ✅ Fixed: Extract data from wrapped response
+  const extractBooksData = (data) => {
+    // If it's already an array, return it
+    if (Array.isArray(data)) {
+      return data;
+    }
+    // If it's the wrapped response object with data property
+    if (data && typeof data === 'object') {
+      // Check for success/data structure
+      if (data.success && Array.isArray(data.data)) {
+        return data.data;
+      }
+      // Check for just data property
+      if (data.data && Array.isArray(data.data)) {
+        return data.data;
+      }
+      // Check if the object itself is the data array wrapped in an object with numeric keys
+      const values = Object.values(data);
+      if (values.length > 0 && Array.isArray(values[0])) {
+        return values[0];
+      }
+    }
+    return [];
+  };
+
   // ✅ Fixed: Ensure writerbook is always an array
-  const books = Array.isArray(writerbook) ? writerbook : [];
+  const books = extractBooksData(writerbook);
   
   console.log("writerbook =", books);
   console.log("isArray =", Array.isArray(books));

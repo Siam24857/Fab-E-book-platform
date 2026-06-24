@@ -31,14 +31,28 @@ export default function PurchasedBooks() {
       }
 
       const data = await res.json();
-      setBooks(data || []);
+      
+      // ✅ Fixed: Extract data from wrapped response
+      let booksData = [];
+      if (data && data.success && Array.isArray(data.data)) {
+        booksData = data.data;
+      } else if (data && data.data && Array.isArray(data.data)) {
+        booksData = data.data;
+      } else if (Array.isArray(data)) {
+        booksData = data;
+      } else {
+        booksData = [];
+      }
+      
+      setBooks(booksData);
 
-      if (data?.length > 0) {
-        toast.success(`Welcome back! You have ${data.length} books in your library`);
+      if (booksData?.length > 0) {
+        toast.success(`Welcome back! You have ${booksData.length} books in your library`);
       }
     } catch (error) {
       toast.error("Failed to load your books. Please try again.");
       console.error("Error fetching books:", error);
+      setBooks([]);
     } finally {
       setLoading(false);
     }

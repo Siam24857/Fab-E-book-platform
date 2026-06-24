@@ -5,8 +5,32 @@ import { BookOpen, Calendar, DollarSign, User, Clock, Download, Eye } from 'luci
 import Link from "next/link";
 
 const PurchaseHistoryPage = ({ historyData = [], tokenData, userData }) => {
-  // ✅ Fixed: Ensure history is always an array
-  const history = Array.isArray(historyData) ? historyData : [];
+  // ✅ Fixed: Extract data from wrapped response
+  const extractHistoryData = (data) => {
+    // If it's already an array, return it
+    if (Array.isArray(data)) {
+      return data;
+    }
+    // If it's the wrapped response object with data property
+    if (data && typeof data === 'object') {
+      // Check for success/data structure
+      if (data.success && Array.isArray(data.data)) {
+        return data.data;
+      }
+      // Check for just data property
+      if (data.data && Array.isArray(data.data)) {
+        return data.data;
+      }
+      // Check if the object itself is the data array wrapped in an object with numeric keys
+      const values = Object.values(data);
+      if (values.length > 0 && Array.isArray(values[0])) {
+        return values[0];
+      }
+    }
+    return [];
+  };
+
+  const history = extractHistoryData(historyData);
   const user = userData || null;
 
   // ✅ Safe total calculation with optional chaining
