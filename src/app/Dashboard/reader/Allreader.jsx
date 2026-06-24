@@ -1,8 +1,8 @@
 "use client";
 
- 
 import { useSession } from "@/app/lib/auth-client";
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -13,23 +13,37 @@ const FarmerMotion = () => (
   </span>
 );
 
-const Readerpage = ({historyData}) => {
+const Readerpage = ({ historyData = [] }) => {
   const { data: session, isPending, error } = useSession();
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCRUDLoading, setIsCRUDLoading] = useState(false);
 
+  console.log(history);
+
   // Fetch data on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // ✅ Fixed: Use optional chaining and null checks
+        if (session?.user) {
+          setUser(session.user);
+        } else {
+          setUser(null);
+        }
         
-      
+        // ✅ Fixed: Ensure historyData is an array
+        if (Array.isArray(historyData)) {
+          setHistory(historyData);
+        } else {
+          setHistory([]);
+        }
         
-        setUser(session.user);
-        setHistory(historyData);
-        toast.success('📚 Welcome back!');
+        // Only show toast if we have data
+        if (session?.user) {
+          toast.success('📚 Welcome back!');
+        }
       } catch (error) {
         toast.error('❌ Failed to load dashboard');
         console.error(error);
@@ -38,7 +52,7 @@ const Readerpage = ({historyData}) => {
       }
     };
     fetchData();
-  }, []);
+  }, [session, historyData]); // ✅ Added dependencies
 
   // CRUD Operations with Toast & Farmer Motion
   const handleAddPurchase = async (newPurchase) => {
@@ -94,7 +108,15 @@ const Readerpage = ({historyData}) => {
     );
   }
 
-  const totalSpent = history.reduce((sum, item) => sum + (item.amount || 0), 0);
+  // ✅ Fixed: Use optional chaining and safe fallback
+  const totalSpent = history?.reduce?.((sum, item) => {
+    const amount = item?.amount || 0;
+    return sum + amount;
+  }, 0) ?? 0;
+
+  // ✅ Fixed: Get user name with safe fallback
+  const userName = user?.name || session?.user?.name || "Reader";
+  const userRole = user?.role || session?.user?.role || "Reader";
 
   return (
     <div className="min-h-screen bg-[#f8f6f3] p-4 sm:p-6 md:p-8">
@@ -134,10 +156,10 @@ const Readerpage = ({historyData}) => {
       <div className="mb-6 sm:mb-8 md:mb-10 flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="uppercase tracking-[4px] text-xs sm:text-sm text-gray-500">
-            Reader Dashboard
+            {userRole} Dashboard
           </p>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold flex items-center gap-2">
-            Welcome, {user?.name || "Reader"}!
+            Welcome, {userName}!
             <FarmerMotion />
           </h1>
         </div>
@@ -165,7 +187,7 @@ const Readerpage = ({historyData}) => {
             Purchased
           </h3>
           <p className="text-3xl sm:text-4xl font-bold mt-2">
-            {history.length}
+            {history?.length ?? 0}
           </p>
         </div>
 
@@ -174,7 +196,7 @@ const Readerpage = ({historyData}) => {
             Purchase History
           </h3>
           <p className="text-3xl sm:text-4xl font-bold mt-2">
-            {history.length}
+            {history?.length ?? 0}
           </p>
         </div>
 
@@ -194,12 +216,10 @@ const Readerpage = ({historyData}) => {
           <h2 className="text-2xl sm:text-3xl font-bold">
             Recent Purchases
           </h2>
-          <button className="text-green-600 hover:text-green-800 text-sm font-medium transition">
-            View All →
-          </button>
+            
         </div>
 
-        {history.length === 0 ? (
+        {!history || history.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4 farmer-motion">📚</div>
             <p className="text-gray-500 text-lg">No purchases found.</p>
@@ -214,32 +234,32 @@ const Readerpage = ({historyData}) => {
               >
                 <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                   <Image
-                    src={book.coverimg || "/default-cover.jpg"}
-                    alt={book.booktitle || "Book cover"}
+                    src={book?.coverimg || "/default-cover.jpg"}
+                    alt={book?.booktitle || "Book cover"}
                     width={60}
                     height={80}
                     className="rounded-md object-cover w-12 h-16 sm:w-[60px] sm:h-[80px]"
                   />
                   <div className="flex-1 min-w-0">
                     <h3 className="font-semibold text-sm sm:text-base truncate">
-                      {book.booktitle || "Untitled"}
+                      {book?.booktitle || "Untitled"}
                     </h3>
                     <p className="text-xs sm:text-sm text-gray-500">
-                      {book.timestamp ? new Date(book.timestamp).toLocaleDateString() : "N/A"}
+                      {book?.timestamp ? new Date(book.timestamp).toLocaleDateString() : "N/A"}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-3 sm:gap-4">
                   <p className="font-bold text-sm sm:text-base">
-                    ${book.amount?.toFixed(2) || "0.00"}
+                    ${book?.amount?.toFixed(2) || "0.00"}
                   </p>
                   
                   {/* CRUD Actions with Toast */}
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleUpdatePurchase(index, {
-                        amount: (book.amount || 0) + 1
+                        amount: (book?.amount || 0) + 1
                       })}
                       disabled={isCRUDLoading}
                       className="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm transition disabled:opacity-50"

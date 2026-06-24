@@ -7,9 +7,13 @@ import { BookDelete } from "@/app/Action/Deletebook";
 import toast, { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
-const Mybooks = ({ token, writerbook }) => {
-  console.log("writerbook =", writerbook);
-console.log("isArray =", Array.isArray(writerbook));
+const Mybooks = ({ token, writerbook = [] }) => {
+  // ✅ Fixed: Ensure writerbook is always an array
+  const books = Array.isArray(writerbook) ? writerbook : [];
+  
+  console.log("writerbook =", books);
+  console.log("isArray =", Array.isArray(books));
+
   const handleDelete = async (id) => {
     const toastId = toast.loading('Deleting book...');
     try {
@@ -105,7 +109,7 @@ console.log("isArray =", Array.isArray(writerbook));
             whileTap={{ scale: 0.95 }}
           >
             <Link
-              href="/writer/Createbook"
+              href="/Dashboard/writer/Createbook"
               className="bg-black text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 text-sm sm:text-base w-full sm:w-auto justify-center"
             >
               <PlusCircle size={18} className="sm:w-5 sm:h-5" />
@@ -131,152 +135,172 @@ console.log("isArray =", Array.isArray(writerbook));
             <div>Actions</div>
           </div>
 
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            {writerbook?.map((book, index) => (
-              <motion.div
-                key={book._id}
-                variants={itemVariants}
-                whileHover={{ 
-                  backgroundColor: "#fafafa",
-                  transition: { duration: 0.2 }
-                }}
-                className="block md:grid md:grid-cols-6 md:gap-4 px-4 sm:px-6 py-4 sm:py-5 border-b hover:bg-gray-50 transition-colors"
-              >
-                {/* Mobile View */}
-                <div className="md:hidden space-y-3">
-                  <div className="flex items-start gap-4">
-                    <Image
-                      src={book.cover}
-                      alt={book.title}
-                      width={60}
-                      height={80}
-                      className="object-cover border w-[60px] h-[80px] rounded"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-base truncate">{book.title}</h3>
-                      <div className="flex flex-wrap items-center gap-2 mt-1">
-                        <span className="font-bold text-sm">${book.price}</span>
-                        <span className="bg-gray-100 px-3 py-1 font-medium text-xs rounded">
-                          {book.genre}
+          {/* ✅ Check if books array has items */}
+          {books?.length > 0 ? (
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {books.map((book, index) => {
+                // ✅ Safe key generation
+                const bookId = book?._id || `book-${index}`;
+                
+                return (
+                  <motion.div
+                    key={bookId}
+                    variants={itemVariants}
+                    whileHover={{ 
+                      backgroundColor: "#fafafa",
+                      transition: { duration: 0.2 }
+                    }}
+                    className="block md:grid md:grid-cols-6 md:gap-4 px-4 sm:px-6 py-4 sm:py-5 border-b hover:bg-gray-50 transition-colors"
+                  >
+                    {/* Mobile View */}
+                    <div className="md:hidden space-y-3">
+                      <div className="flex items-start gap-4">
+                        <Image
+                          src={book?.cover || "/default-cover.jpg"}
+                          alt={book?.title || "Book cover"}
+                          width={60}
+                          height={80}
+                          className="object-cover border w-[60px] h-[80px] rounded"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-base truncate">
+                            {book?.title || "Untitled"}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-2 mt-1">
+                            <span className="font-bold text-sm">
+                              ${book?.price?.toFixed?.(2) || book?.price || "0.00"}
+                            </span>
+                            <span className="bg-gray-100 px-3 py-1 font-medium text-xs rounded">
+                              {book?.genre || "N/A"}
+                            </span>
+                          </div>
+                          <div className="mt-2">
+                            <span
+                              className={`px-3 py-1 text-xs font-medium rounded inline-block ${
+                                book?.status === "Available"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-gray-100 text-gray-700"
+                              }`}
+                            >
+                              {book?.status || "Unknown"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 pl-[76px]">
+                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                          <Link
+                            href={`/writer/Edit/${book?._id || '#'}`}
+                            className="text-gray-700 hover:text-black"
+                          >
+                            <PenLine size={18} />
+                          </Link>
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                          <Link
+                            href={`/bookdeattailspage/${book?._id || '#'}`}
+                            className="text-gray-700 hover:text-black"
+                          >
+                            <Eye size={18} />
+                          </Link>
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                          <button
+                            onClick={() => handleDelete(book?._id)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </motion.div>
+                      </div>
+                    </div>
+
+                    {/* Desktop/Tablet View */}
+                    <div className="hidden md:contents">
+                      <div>
+                        <Image
+                          src={book?.cover || "/default-cover.jpg"}
+                          alt={book?.title || "Book cover"}
+                          width={60}
+                          height={80}
+                          className="object-cover border w-[60px] h-[80px]"
+                        />
+                      </div>
+                      <div className="font-semibold text-base lg:text-lg truncate">
+                        {book?.title || "Untitled"}
+                      </div>
+                      <div className="font-semibold">
+                        ${book?.price?.toFixed?.(2) || book?.price || "0.00"}
+                      </div>
+                      <div>
+                        <span className="bg-gray-100 px-3 sm:px-4 py-1 sm:py-2 font-medium text-xs sm:text-sm rounded">
+                          {book?.genre || "N/A"}
                         </span>
                       </div>
-                      <div className="mt-2">
+                      <div>
                         <span
-                          className={`px-3 py-1 text-xs font-medium rounded inline-block ${
-                            book.status === "Available"
+                          className={`px-3 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded ${
+                            book?.status === "Available"
                               ? "bg-green-100 text-green-700"
                               : "bg-gray-100 text-gray-700"
                           }`}
                         >
-                          {book.status}
+                          {book?.status || "Unknown"}
                         </span>
                       </div>
+                      <div className="flex items-center gap-3 sm:gap-5">
+                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                          <Link
+                            href={`/writer/Edit/${book?._id || '#'}`}
+                            className="text-gray-700 hover:text-black"
+                          >
+                            <PenLine size={18} className="sm:w-5 sm:h-5" />
+                          </Link>
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                          <Link
+                            href={`/bookdeattailspage/${book?._id || '#'}`}
+                            className="text-gray-700 hover:text-black"
+                          >
+                            <Eye size={18} className="sm:w-5 sm:h-5" />
+                          </Link>
+                        </motion.div>
+                        <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                          <button
+                            onClick={() => handleDelete(book?._id)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            <Trash2 size={18} className="sm:w-5 sm:h-5" />
+                          </button>
+                        </motion.div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-4 pl-[76px]">
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <Link
-                        href={`/writer/Edit/${book._id}`}
-                        className="text-gray-700 hover:text-black"
-                      >
-                        <PenLine size={18} />
-                      </Link>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <Link
-                        href={`/bookdeattailspage/${book._id}`}
-                        className="text-gray-700 hover:text-black"
-                      >
-                        <Eye size={18} />
-                      </Link>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <button
-                        onClick={() => handleDelete(book._id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </motion.div>
-                  </div>
-                </div>
-
-                {/* Desktop/Tablet View */}
-                <div className="hidden md:contents">
-                  <div>
-                    <Image
-                      src={book.cover}
-                      alt={book.title}
-                      width={60}
-                      height={80}
-                      className="object-cover border w-[60px] h-[80px]"
-                    />
-                  </div>
-                  <div className="font-semibold text-base lg:text-lg truncate">
-                    {book.title}
-                  </div>
-                  <div className="font-semibold">
-                    ${book.price}
-                  </div>
-                  <div>
-                    <span className="bg-gray-100 px-3 sm:px-4 py-1 sm:py-2 font-medium text-xs sm:text-sm rounded">
-                      {book.genre}
-                    </span>
-                  </div>
-                  <div>
-                    <span
-                      className={`px-3 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium rounded ${
-                        book.status === "Available"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-700"
-                      }`}
-                    >
-                      {book.status}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 sm:gap-5">
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <Link
-                        href={`/writer/Edit/${book._id}`}
-                        className="text-gray-700 hover:text-black"
-                      >
-                        <PenLine size={18} className="sm:w-5 sm:h-5" />
-                      </Link>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <Link
-                        href={`/bookdeattailspage/${book._id}`}
-                        className="text-gray-700 hover:text-black"
-                      >
-                        <Eye size={18} className="sm:w-5 sm:h-5" />
-                      </Link>
-                    </motion.div>
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <button
-                        onClick={() => handleDelete(book._id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <Trash2 size={18} className="sm:w-5 sm:h-5" />
-                      </button>
-                    </motion.div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {writerbook?.length === 0 && (
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          ) : (
             <motion.div 
               className="p-8 sm:p-10 text-center text-gray-500"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              No ebooks found.
+              <div className="text-6xl mb-4">📚</div>
+              <p className="text-lg font-medium text-gray-700">No ebooks found</p>
+              <p className="text-sm text-gray-500 mt-2">Start creating your first ebook today!</p>
+              <div className="mt-6">
+                <Link
+                  href="/Dashboard/writer/Createbook"
+                  className="inline-block bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition"
+                >
+                  Create Your First Ebook
+                </Link>
+              </div>
             </motion.div>
           )}
         </motion.div>

@@ -98,20 +98,20 @@ const WriterClient = ({ user, books, salesHistory }) => {
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-3 sm:gap-4">
           <Link
-            href="/writer/add-ebook"
+            href="/Dashboard/writer/Createbook"
             className="bg-black text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 text-sm sm:text-base w-full sm:w-auto justify-center hover:bg-gray-800 transition"
           >
             <PlusCircle size={18} className="sm:w-5 sm:h-5" />
             Add Ebook
           </Link>
           <Link
-            href="/writer/manage-ebooks"
+            href="/Dashboard/writer/my-book"
             className="border bg-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto text-center hover:bg-gray-50 transition"
           >
             Manage Ebooks
           </Link>
           <Link
-            href="/writer/sales"
+            href="/Dashboard/writer/sales-history"
             className="border bg-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 text-sm sm:text-base w-full sm:w-auto text-center hover:bg-gray-50 transition"
           >
             View Sales
