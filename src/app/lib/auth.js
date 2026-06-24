@@ -18,7 +18,7 @@ const googleProvider = process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT
   : {};
 
 export const auth = betterAuth({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://fab-e-book-platform.vercel.app",
   secret: process.env.BETTER_AUTH_SECRET || process.env.AUTH_SECRET || "dev-secret-change-me",
   trustedOrigins: [
     process.env.NEXT_PUBLIC_APP_URL,
