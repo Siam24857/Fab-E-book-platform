@@ -28,7 +28,7 @@ const RegisterPage = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "reader",
+    role: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
