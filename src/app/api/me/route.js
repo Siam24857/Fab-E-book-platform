@@ -8,7 +8,8 @@ import { auth } from "@/app/lib/auth";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const session = await auth.api.getSession({ headers: headers() });
+  const requestHeaders = await headers();
+  const session = await auth.api.getSession({ headers: requestHeaders });
 
   return NextResponse.json(session?.user ?? null);
 }

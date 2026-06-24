@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "@/app/lib/auth";
+import { getBackendUrl } from "@/app/lib/backend-url";
 
 export async function GET() {
   try {
@@ -12,10 +13,7 @@ export async function GET() {
       return Response.json([], { status: 401 });
     }
 
-    const serverUrl = process.env.SERVER_URL;
-    if (!serverUrl) {
-      return Response.json([], { status: 500 });
-    }
+    const serverUrl = getBackendUrl();
 
     const res = await fetch(`${serverUrl}/readerbookhistory/${user.id}`, {
       headers: {

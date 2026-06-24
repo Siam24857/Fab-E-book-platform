@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { BookOpen, Trash2, Download, Share2, MoreVertical } from "lucide-react";
 import { useSession } from "@/app/lib/auth-client";
+import { getSafeBookTitle, getSafeImageSrc } from "@/app/lib/image-utils";
 
 export default function PurchasedBooks() {
   const { data: session } = useSession();
@@ -244,9 +245,13 @@ export default function PurchasedBooks() {
               initial="hidden"
               animate="visible"
             >
-              {books.map((book) => (
+              {books.map((book, index) => {
+                const coverSrc = getSafeImageSrc(book.coverimg);
+                const title = getSafeBookTitle(book, book.booktitle || "Untitled Book");
+
+                return (
                 <motion.div
-                  key={book.sessionId}
+                  key={book.sessionId || book._id || `${book.productId || "library"}-${index}`}
                   layout
                   variants={itemVariants}
                   whileHover={{ 
@@ -262,8 +267,8 @@ export default function PurchasedBooks() {
                     >
                       <div className="relative overflow-hidden bg-[#f5f1ed]">
                         <Image
-                          src={book.coverimg}
-                          alt={book.booktitle}
+                          src={coverSrc}
+                          alt={title}
                           width={240}
                           height={350}
                           className="w-full aspect-[2/3] object-cover transition duration-500 group-hover:scale-110"
@@ -306,7 +311,7 @@ export default function PurchasedBooks() {
                     {/* Book Info */}
                     <div className="p-2.5 sm:p-3 md:p-4">
                       <h3 className="text-sm sm:text-base md:text-lg font-serif text-[#1f2430] line-clamp-2 mb-0.5 sm:mb-1">
-                        {book.booktitle}
+                        {title}
                       </h3>
                       <p className="text-[10px] sm:text-xs text-[#8b6f5a] line-clamp-1">
                         {book.author || "Unknown Author"}
@@ -348,7 +353,8 @@ export default function PurchasedBooks() {
                     </AnimatePresence>
                   </div>
                 </motion.div>
-              ))}
+                );
+              })}
             </motion.div>
           ) : (
             <motion.div 

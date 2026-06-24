@@ -9,6 +9,8 @@ const Slaeshistory = async () => {
   const user = await userdata();
   const writerhistory = await WriterHistorybook(token, user?.id);
 
+  console.log(writerhistory)
+
 
   const totalRevenue =
     writerhistory?.reduce(

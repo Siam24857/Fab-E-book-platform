@@ -15,6 +15,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { authClient, useSession } from "../lib/auth-client";
+ 
 
 const LoginPage = () => {
   const router = useRouter();
@@ -29,18 +30,7 @@ const LoginPage = () => {
   const [rememberMe, setRememberMe] = useState(false);
 
   // Redirect if already logged in
-  useEffect(() => {
-    if (session?.user) {
-      const role = session.user.role || "user";
-      if (role === "admin") {
-        router.push("/dashboard/admin");
-      } else if (role === "writer") {
-        router.push("/dashboard/writer");
-      } else {
-        router.push("/dashboard/user");
-      }
-    }
-  }, [session, router]);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -78,11 +68,11 @@ const LoginPage = () => {
         
         // Redirect based on role
         if (role === "admin") {
-          router.push("/dashboard/admin");
+          router.push("/Dashboard/admin");
         } else if (role === "writer") {
-          router.push("/dashboard/writer");
+          router.push("/Dashboard/writer");
         } else {
-          router.push("/dashboard/user");
+          router.push("/Dashboard/reader");
         }
         
         // Refresh to update session state
@@ -97,9 +87,18 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = async () => {
-   await authClient.signIn.social({
-    provider: "google",
-  });
+    setLoading(true);
+    setError("");
+
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/Dashboard/reader",
+      });
+    } catch (err) {
+      setError("Google sign-in could not be started. Please try again.");
+      setLoading(false);
+    }
   };
 
   // Animation variants

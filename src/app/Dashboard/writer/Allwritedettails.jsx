@@ -7,10 +7,22 @@ import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 
 const WriterClient = ({ user, books, salesHistory }) => {
-  const totalBooks = books?.length || 0;
-  const publishedBooks = books?.filter((book) => book.status === "Available").length || books?.length || 0;
-  const totalSales = salesHistory?.length || 0;
-  const revenue = salesHistory?.reduce((total, sale) => total + Number(sale.price || 0), 0) || 0;
+  const normalizedBooks = Array.isArray(books)
+    ? books
+    : Array.isArray(books?.books)
+      ? books.books
+      : [];
+
+  const normalizedSalesHistory = Array.isArray(salesHistory)
+    ? salesHistory
+    : Array.isArray(salesHistory?.sales)
+      ? salesHistory.sales
+      : [];
+
+  const totalBooks = normalizedBooks.length;
+  const publishedBooks = normalizedBooks.filter((book) => book?.status === "Available").length || totalBooks;
+  const totalSales = normalizedSalesHistory.length;
+  const revenue = normalizedSalesHistory.reduce((total, sale) => total + Number(sale?.price || 0), 0);
 
   const stats = [
     { title: "Total Ebooks", value: totalBooks, icon: BookOpen, color: "from-blue-500 to-blue-600" },

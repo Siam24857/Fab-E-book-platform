@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import toast, { Toaster } from 'react-hot-toast';
+import { getSafeBookAuthor, getSafeBookPrice, getSafeBookTitle, getSafeImageSrc } from "@/app/lib/image-utils";
 
 const GENRES = [
   "All Genres", "Fiction", "Mystery", "Romance",
@@ -293,29 +294,37 @@ export default function BookStore({ BOOKS }) {
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-                {paginatedBooks.map((book) => (
-                  <Link key={book._id || book.id} href={`/bookdeattailspage/${book._id || book.id}`}>
-                    <div className="group cursor-pointer transition hover:shadow-lg rounded-lg overflow-hidden">
-                      <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
-                        <img
-                          src={book.cover}
-                          alt={book.title}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                      </div>
-                      <div className="p-2 sm:p-3">
-                        <p className="text-xs text-gray-500 truncate">{book.writer}</p>
-                        <p className="text-sm font-semibold text-gray-900 truncate mt-0.5">{book.title}</p>
-                        <div className="flex items-center justify-between mt-1.5">
-                          <span className="text-sm font-bold">${book.price.toFixed(2)}</span>
-                          <span className="text-[10px] font-medium px-2 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-600 truncate max-w-[60px]">
-                            {book.genre}
-                          </span>
+                {paginatedBooks.map((book) => {
+                  const bookId = book._id || book.id || book.slug || book.title;
+                  const coverSrc = getSafeImageSrc(book.cover);
+                  const title = getSafeBookTitle(book);
+                  const author = getSafeBookAuthor(book);
+                  const price = getSafeBookPrice(book);
+
+                  return (
+                    <Link key={bookId} href={`/bookdeattailspage/${bookId}`}>
+                      <div className="group cursor-pointer transition hover:shadow-lg rounded-lg overflow-hidden">
+                        <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
+                          <img
+                            src={coverSrc}
+                            alt={title}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                        </div>
+                        <div className="p-2 sm:p-3">
+                          <p className="text-xs text-gray-500 truncate">{author}</p>
+                          <p className="text-sm font-semibold text-gray-900 truncate mt-0.5">{title}</p>
+                          <div className="flex items-center justify-between mt-1.5">
+                            <span className="text-sm font-bold">${price.toFixed(2)}</span>
+                            <span className="text-[10px] font-medium px-2 py-0.5 bg-gray-100 border border-gray-200 rounded text-gray-600 truncate max-w-[60px]">
+                              {book.genre || "General"}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
 
               {/* Pagination */}

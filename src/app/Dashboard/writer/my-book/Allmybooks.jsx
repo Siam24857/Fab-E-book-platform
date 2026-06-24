@@ -8,6 +8,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
 const Mybooks = ({ token, writerbook }) => {
+  console.log("writerbook =", writerbook);
+console.log("isArray =", Array.isArray(writerbook));
   const handleDelete = async (id) => {
     const toastId = toast.loading('Deleting book...');
     try {

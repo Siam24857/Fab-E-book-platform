@@ -218,7 +218,7 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                                 ${book.price}
                             </span>
 
-                            {paymented === book._id ? (
+                            {paymented ? (
                                 <button className="bg-red-700 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white transition hover:bg-red-800 w-full sm:w-auto">
                                     Already Available for you 
                                 </button>
@@ -265,7 +265,7 @@ export default function BookDetailsPage({ book, paymented, userId }) {
                         {/* Content Section - Responsive */}
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 border border-stone-300 bg-stone-50 p-4 sm:p-6 text-stone-700">
                             <Lock size={20} className="sm:w-[24px] sm:h-[24px]" />
-                            {paymented === book._id ? (
+                            {paymented ? (
                                 <p className="text-base sm:text-lg break-words">
                                     {book.content}
                                 </p>

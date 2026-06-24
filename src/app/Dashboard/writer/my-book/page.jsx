@@ -5,8 +5,9 @@ import Mybooks from './Allmybooks';
 
 const MAinpagebooks = async() => {
       const user = await userdata();
-  const writerbook = await Writerbooks(user?.id);
-  const token = await userseissondata()
+        const token = await userseissondata()
+  const writerbook = await Writerbooks(token, user?.id);
+
     return (
         <div>
             <Mybooks token={token} writerbook={writerbook}></Mybooks>

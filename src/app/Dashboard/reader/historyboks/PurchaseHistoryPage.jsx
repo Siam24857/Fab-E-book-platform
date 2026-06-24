@@ -92,7 +92,7 @@ const PurchaseHistoryPage = ({ historyData, tokenData, userData }) => {
               <tbody>
                 {history.map((item, index) => (
                   <tr
-                    key={item.sessionId || index}
+                    key={item._id || item.sessionId || item.paymentIntentId || `${item.productId || "history"}-${index}`}
                     className="border-b last:border-b-0 hover:bg-[#faf8f6] transition"
                   >
                     <td className="px-4 sm:px-6 py-4 sm:py-6">
@@ -146,7 +146,7 @@ const PurchaseHistoryPage = ({ historyData, tokenData, userData }) => {
           <div className="md:hidden">
             {history.map((item, index) => (
               <div
-                key={item.sessionId || index}
+                key={item._id || item.sessionId || item.paymentIntentId || `${item.productId || "history"}-${index}`}
                 className="border-b last:border-b-0 p-4 space-y-3"
               >
                 <div className="flex justify-between items-start">

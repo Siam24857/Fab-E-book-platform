@@ -70,16 +70,16 @@ const Navbar = () => {
   ];
 
   const getDashboardLink = () => {
-    if (userRole === "admin") return "/dashboard/admin";
-    if (userRole === "writer") return "/dashboard/writer";
-    if (userRole === "user") return "/dashboard/reader";
-    return "/dashboard";
+    if (userRole === "admin") return "/Dashboard/admin";
+    if (userRole === "writer") return "/Dashboard/writer";
+    if (userRole === "reader" || userRole === "user" || userRole === "seeker") return "/Dashboard/reader";
+    return "/Dashboard/reader";
   };
 
   const getDashboardLabel = () => {
     if (userRole === "admin") return "Admin Dashboard";
     if (userRole === "writer") return "Writer Dashboard";
-    if (userRole === "user") return "Reader Dashboard";
+    if (userRole === "reader" || userRole === "user" || userRole === "seeker") return "Reader Dashboard";
     return "Dashboard";
   };
 

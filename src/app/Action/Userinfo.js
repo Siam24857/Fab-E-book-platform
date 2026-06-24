@@ -2,20 +2,23 @@ import "server-only";
 
 import { headers } from "next/headers";
 import { auth } from "../lib/auth";
+import { getBackendUrl } from "../lib/backend-url";
 
-const serverurl = process.env.SERVER_URL;
+const serverurl = getBackendUrl();
 
 export const userdata = async () => {
+  const requestHeaders = await headers();
   const session = await auth.api.getSession({
-    headers: headers(),
+    headers: requestHeaders,
   });
 
   return session?.user;
 };
 
 export const userseissondata = async () => {
+  const requestHeaders = await headers();
   const usersession = await auth.api.getSession({
-    headers: headers(),
+    headers: requestHeaders,
   });
 
   return usersession?.session?.token;

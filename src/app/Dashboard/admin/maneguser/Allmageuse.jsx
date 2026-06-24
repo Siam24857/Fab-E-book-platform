@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BookDelete } from "@/app/Action/Deletebook";
 
 const Maneger = ({ token, alluserdata }) => {
+  console.log(alluserdata)
   const router = useRouter();
 
   const handleUpdateUser = async (id, newRole) => {

@@ -12,7 +12,7 @@ const Dettaislpage = async({params}) => {
     const paymented = paymentedbook[0]?.productId
     return (
         <div>
-            <BookDetailsPage paymented={paymented} book={book} userId ={userId}></BookDetailsPage>
+            <BookDetailsPage paymented={paymentedbook} book={book} userId ={userId}></BookDetailsPage>
         </div>
     );
 };
