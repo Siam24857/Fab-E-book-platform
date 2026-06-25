@@ -166,7 +166,7 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         }
     };
 
-    // Toggle bookmark function
+    // ✅ COMPLETELY FIXED: Toggle bookmark function with better error handling
     const toggleBookmark = async () => {
         if (!userId) {
             toast.error('Please login to bookmark books');
@@ -182,15 +182,30 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
 
         try {
             if (isBookmarked) {
+                // Remove from localStorage first
                 const removed = removeBookmarkFromLocalStorage(safeBook._id);
                 if (removed) {
                     setIsBookmarked(false);
                     setBookmarkId(null);
                     toast.success('Bookmark removed successfully');
+                    
+                    // Try to remove from database (non-blocking)
+                    try {
+                        const dbResult = await Bookmarkbooks({ 
+                            userId: userId,
+                            bookId: safeBook._id, 
+                            action: 'remove' 
+                        });
+                        console.log('Database remove result:', dbResult);
+                    } catch (dbError) {
+                        // Silent fail - localStorage already updated
+                        console.warn('Failed to remove from database:', dbError);
+                    }
                 } else {
                     toast.error('Failed to remove bookmark');
                 }
             } else {
+                // Prepare bookmark data
                 const bookmarkData = {
                     userId: userId,
                     bookId: safeBook._id,
@@ -200,6 +215,7 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                     bookmarkedAt: new Date().toISOString()
                 };
 
+                // Save to localStorage first (offline-first approach)
                 const localBookmark = saveBookmarkToLocalStorage(bookmarkData);
                 
                 if (localBookmark) {
@@ -207,10 +223,17 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                     setBookmarkId(localBookmark._id);
                     toast.success('Bookmark added successfully');
                     
+                    // Then try to save to database (non-blocking)
                     try {
                         const dbResult = await Bookmarkbooks(bookmarkData);
-                        console.log('Database save result:', dbResult);
+                        if (dbResult && dbResult.success === false) {
+                            console.warn('Database save failed:', dbResult.message);
+                            // User already has local bookmark, so we don't show error
+                        } else {
+                            console.log('Database save success:', dbResult);
+                        }
                     } catch (dbError) {
+                        // Silent fail - localStorage already has the bookmark
                         console.warn('Failed to save to database, but localStorage saved:', dbError);
                     }
                 } else {
