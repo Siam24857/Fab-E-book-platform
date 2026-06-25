@@ -1,21 +1,32 @@
-import React from 'react';
-import BookDetailsPage from './Alldestails';
-import { bookdettails } from "@/app/Action/Bookdettaislpage";
+import { redirect } from "next/navigation";
+import BookDetailsPage from "./Alldestails";
+import { userdata, userseissondata } from "@/app/Action/Userinfo";
 import { Historybook } from "@/app/Action/Historydata";
-import { userdata, userseissondata } from '@/app/Action/Userinfo';
+import { bookdettails } from "@/app/Action/Bookdettaislpage";
 
-const Dettaislpage = async({params}) => {
-     const {id} = await params
-    const book = await bookdettails(id)
-    const userId = await userdata()
-       const token = await userseissondata()
-    const paymentedbook = await Historybook(token, id)
-    const paymented = paymentedbook[0]?.productId
-    return (
-        <div>
-            <BookDetailsPage paymented={paymentedbook} book={book} userId ={userId} userRole={userId.role}></BookDetailsPage>
-        </div>
-    );
+const Dettaislpage = async ({ params }) => {
+  const { id } = await params;
+
+  const book = await bookdettails(id);
+  const userId = await userdata();
+
+  if (!userId) {
+    redirect("/Login");
+  }
+
+  const token = await userseissondata();
+  const paymentedbook = await Historybook(token, id);
+
+  return (
+    <div>
+      <BookDetailsPage
+        paymented={paymentedbook}
+        book={book}
+        userId={userId}
+        userRole={userId.role}
+      />
+    </div>
+  );
 };
 
 export default Dettaislpage;

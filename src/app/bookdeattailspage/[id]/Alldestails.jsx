@@ -4,9 +4,40 @@ import { Bookmarkbooks } from "@/app/Action/Bookmarkfuctionalyti";
 import { Calendar, Tag, User, Bookmark, Lock, Shield, PenLine, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function BookDetailsPage({ book, paymented, userId, userRole }) {
-    console.log(paymented, userRole);
+    const router = useRouter();
+    
+    // ✅ EARLY RETURN - Check authentication FIRST before any other code
+    // This prevents the "Cannot read properties of undefined" error
+    const isAuthenticated = userId && userRole;
+    
+    // ✅ Redirect to login if not authenticated
+    useEffect(() => {
+        if (!isAuthenticated) {
+            localStorage.setItem('redirectAfterLogin', window.location.pathname);
+            router.push('/Login');
+        }
+    }, [isAuthenticated, router]);
+
+    // ✅ EARLY RETURN - Show loading state if not authenticated
+    // This MUST come before any code that uses userId or userRole
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-stone-100 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stone-900 mx-auto"></div>
+                    <p className="mt-4 text-stone-600">Redirecting to login...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // ✅ Now it's safe to use userId and userRole
+    console.log('User ID:', userId);
+    console.log('User Role:', userRole);
+    console.log('Payment status:', paymented);
     
     // ✅ Extract book data from wrapped response
     const extractBookData = (data) => {
@@ -41,41 +72,32 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         writerId: rawBook?.writerId || rawBook?.writer || rawBook?.authorId || ''
     };
 
-    // ✅ FIXED: Check if user has actually purchased (not just truthy object)
+    // ✅ Check if user has actually purchased
     const hasPurchased = (() => {
-        // If paymented is a boolean, use it directly
         if (typeof paymented === 'boolean') {
             return paymented;
         }
-        // If paymented is an object with success/data structure
         if (paymented && typeof paymented === 'object') {
-            // Check if it's a successful response with data
             if (paymented.success && paymented.data) {
-                // If data is an array, check if it has items
                 if (Array.isArray(paymented.data)) {
                     return paymented.data.length > 0;
                 }
-                // If data is an object, it means there's a purchase
                 if (typeof paymented.data === 'object' && paymented.data !== null) {
                     return true;
                 }
                 return false;
             }
-            // If it has count property, check if count > 0
             if (paymented.count !== undefined) {
                 return paymented.count > 0;
             }
-            // Check if it's an array
             if (Array.isArray(paymented)) {
                 return paymented.length > 0;
             }
-            // If it's an object with _id or id, it's a purchase
             if (paymented._id || paymented.id) {
                 return true;
             }
             return false;
         }
-        // If paymented is null, undefined, or false
         return false;
     })();
 
@@ -83,9 +105,9 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
     const isWriterOrAdmin = userRole === 'writer' || userRole === 'admin';
     const isAdmin = userRole === 'admin';
     const isWriter = userRole === 'writer';
-    const isReader = userRole === 'reader' || !userRole;
+    const isReader = userRole === 'reader';
     
-    // ✅ Determine if user can view content (only if purchased OR writer/admin)
+    // ✅ Determine if user can view content
     const canViewContent = isWriterOrAdmin || hasPurchased;
 
     console.log('hasPurchased:', hasPurchased);
@@ -166,10 +188,11 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         }
     };
 
-    // ✅ COMPLETELY FIXED: Toggle bookmark function with better error handling
+    // Toggle bookmark function
     const toggleBookmark = async () => {
         if (!userId) {
             toast.error('Please login to bookmark books');
+            router.push('/Login');
             return;
         }
 
@@ -182,14 +205,12 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
 
         try {
             if (isBookmarked) {
-                // Remove from localStorage first
                 const removed = removeBookmarkFromLocalStorage(safeBook._id);
                 if (removed) {
                     setIsBookmarked(false);
                     setBookmarkId(null);
                     toast.success('Bookmark removed successfully');
                     
-                    // Try to remove from database (non-blocking)
                     try {
                         const dbResult = await Bookmarkbooks({ 
                             userId: userId,
@@ -198,14 +219,12 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                         });
                         console.log('Database remove result:', dbResult);
                     } catch (dbError) {
-                        // Silent fail - localStorage already updated
                         console.warn('Failed to remove from database:', dbError);
                     }
                 } else {
                     toast.error('Failed to remove bookmark');
                 }
             } else {
-                // Prepare bookmark data
                 const bookmarkData = {
                     userId: userId,
                     bookId: safeBook._id,
@@ -215,7 +234,6 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                     bookmarkedAt: new Date().toISOString()
                 };
 
-                // Save to localStorage first (offline-first approach)
                 const localBookmark = saveBookmarkToLocalStorage(bookmarkData);
                 
                 if (localBookmark) {
@@ -223,17 +241,14 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                     setBookmarkId(localBookmark._id);
                     toast.success('Bookmark added successfully');
                     
-                    // Then try to save to database (non-blocking)
                     try {
                         const dbResult = await Bookmarkbooks(bookmarkData);
                         if (dbResult && dbResult.success === false) {
                             console.warn('Database save failed:', dbResult.message);
-                            // User already has local bookmark, so we don't show error
                         } else {
                             console.log('Database save success:', dbResult);
                         }
                     } catch (dbError) {
-                        // Silent fail - localStorage already has the bookmark
                         console.warn('Failed to save to database, but localStorage saved:', dbError);
                     }
                 } else {
@@ -267,7 +282,6 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
 
     return (
         <div className="min-h-screen bg-stone-100">
-            {/* Toaster Component */}
             <Toaster 
                 position="top-right"
                 toastOptions={{
@@ -295,7 +309,7 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
 
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
                 <div className="grid gap-8 md:gap-12 lg:grid-cols-[320px_1fr]">
-                    {/* Cover - Responsive */}
+                    {/* Cover */}
                     <div className="max-w-[280px] sm:max-w-[320px] mx-auto lg:mx-0 w-full">
                         <img
                             src={safeBook.cover}
@@ -307,14 +321,13 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                         />
                     </div>
 
-                    {/* Details - Responsive */}
+                    {/* Details */}
                     <div>
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="inline-block bg-stone-200 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium">
                                 {safeBook.genre}
                             </span>
                             
-                            {/* ✅ Role Badge - Show if user is writer or admin */}
                             {isWriterOrAdmin && (
                                 <span className={`inline-flex items-center gap-1 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium ${
                                     isAdmin 
@@ -363,13 +376,12 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                             {safeBook.description}
                         </p>
 
-                        {/* Actions - Responsive */}
+                        {/* Actions */}
                         <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 sm:gap-5">
                             <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900">
                                 ${Number(safeBook.price).toFixed(2)}
                             </span>
 
-                            {/* ✅ Show Buy button ONLY for readers who haven't purchased */}
                             {isReader && !hasPurchased ? (
                                 <form action="/api/checkout_sessions" method="POST" className="w-full sm:w-auto">
                                     <input type="hidden" name="price" defaultValue={safeBook.price} />
@@ -388,12 +400,10 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                                     </section>
                                 </form>
                             ) : isReader && hasPurchased ? (
-                                // ✅ Reader who purchased
                                 <button className="bg-green-700 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white transition hover:bg-green-800 w-full sm:w-auto cursor-default">
                                     ✅ Already Purchased
                                 </button>
                             ) : (
-                                // ✅ Writer or Admin - No Buy button
                                 <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
                                     <div className="bg-gray-200 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-gray-600 w-full sm:w-auto cursor-not-allowed opacity-70">
                                         <span className="flex items-center gap-2">
@@ -409,7 +419,6 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                                 </div>
                             )}
 
-                            {/* Bookmark Toggle Button - Available for all roles */}
                             <button
                                 onClick={toggleBookmark}
                                 disabled={loading || !safeBook._id}
@@ -430,7 +439,7 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
 
                         <hr className="my-8 sm:my-10 border-stone-300" />
 
-                        {/* ✅ Content Section */}
+                        {/* Content Section */}
                         <div className={`flex flex-col items-start gap-3 sm:gap-4 border p-4 sm:p-6 ${
                             canViewContent 
                                 ? 'border-green-300 bg-green-50' 
@@ -445,7 +454,6 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                             
                             {canViewContent ? (
                                 <div className="w-full">
-                                    {/* ✅ Show preview notice for writers/admins */}
                                     {isWriterOrAdmin && !hasPurchased && (
                                         <div className="mb-3 p-2 bg-amber-50 border border-amber-200 rounded text-amber-700 text-sm">
                                             <span className="font-semibold">👁️ Preview Mode:</span> You can view the full content as {isAdmin ? 'an Admin' : 'a Writer'}.
