@@ -453,15 +453,14 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                             </div>
                             
                             {canViewContent ? (
-                                <div className="w-full">
-                                    {isWriterOrAdmin && !hasPurchased && (
-                                        <div className="mb-3 p-2 bg-amber-50 border border-amber-200 rounded text-amber-700 text-sm">
-                                            <span className="font-semibold">👁️ Preview Mode:</span> You can view the full content as {isAdmin ? 'an Admin' : 'a Writer'}.
-                                        </div>
-                                    )}
-                                    <div className="text-base sm:text-lg leading-7 text-stone-700 whitespace-pre-wrap">
-                                        {safeBook.content}
-                                    </div>
+                                
+                                <div className="w-full text-center py-6">
+                                    <p className="text-base sm:text-lg text-gray-500">
+                                         this ebook not avvilabe for  to the read the full content.
+                                    </p>
+                                    <p className="text-sm text-gray-400 mt-2">
+                                         {userRole} can not acess the content
+                                    </p>
                                 </div>
                             ) : (
                                 <div className="w-full text-center py-6">
