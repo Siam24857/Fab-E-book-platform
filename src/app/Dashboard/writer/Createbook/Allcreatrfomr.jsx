@@ -198,7 +198,7 @@ export default function EbookCreateForm({ token, companys, recuiterdata }) {
         const ebookData = {
             title: title,
             writer: writer,
-            writerId: session?.id || '',
+            writerId: session?.user.id || '',
             cover: imageUrl || (company?.cover || ''),
             description: description || "A fascinating story about discovery and adventure...",
             content: content || "Chapter 1: The Beginning...",
@@ -216,7 +216,8 @@ export default function EbookCreateForm({ token, companys, recuiterdata }) {
         try {
             const payload = await creatcompnay(token, ebookData);
             
-            if (payload?.success || payload?.insertedId) {
+            // Check for insertedId in the correct path (data.insertedId)
+            if (payload?.data?.insertedId) {
                 setCompany(ebookData);
                 setErrors({});
                 setIsEditing(false);
@@ -231,7 +232,7 @@ export default function EbookCreateForm({ token, companys, recuiterdata }) {
                 
                 setTimeout(() => setSuccessMessage(''), 5000);
             } else {
-                throw new Error(payload?.error || "Failed to save ebook");
+                throw new Error(payload?.success || "Ebook created successfully");
             }
         } catch (error) {
             console.error("Error saving ebook:", error);

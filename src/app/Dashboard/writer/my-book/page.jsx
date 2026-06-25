@@ -7,10 +7,11 @@ const MAinpagebooks = async() => {
       const user = await userdata();
         const token = await userseissondata()
   const writerbook = await Writerbooks(token, user?.id);
+  console.log(writerbook)
 
     return (
         <div>
-            <Mybooks token={token} writerbook={writerbook}></Mybooks>
+            <Mybooks token={token} writerbook={writerbook.data}></Mybooks>
         </div>
     );
 };

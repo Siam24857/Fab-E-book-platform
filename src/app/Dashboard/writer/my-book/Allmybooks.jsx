@@ -138,7 +138,7 @@ const Mybooks = ({ token, writerbook = [] }) => {
               className="bg-black text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex items-center gap-2 sm:gap-3 text-sm sm:text-base w-full sm:w-auto justify-center"
             >
               <PlusCircle size={18} className="sm:w-5 sm:h-5" />
-              Add Ebook
+              Create Ebook
             </Link>
           </motion.div>
         </motion.div>
@@ -214,12 +214,12 @@ const Mybooks = ({ token, writerbook = [] }) => {
                               {book?.status || "Unknown"}
                             </span>
                           </div>
-                        </div>
+                        </div> 
                       </div>
                       <div className="flex items-center gap-4 pl-[76px]">
                         <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                           <Link
-                            href={`/writer/Edit/${book?._id || '#'}`}
+                            href={`/Dashboard/writer/Edit/${book?._id || '#'}`}
                             className="text-gray-700 hover:text-black"
                           >
                             <PenLine size={18} />
@@ -323,7 +323,7 @@ const Mybooks = ({ token, writerbook = [] }) => {
                   href="/Dashboard/writer/Createbook"
                   className="inline-block bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition"
                 >
-                  Create Your First Ebook
+                  Creat Your Ebook
                 </Link>
               </div>
             </motion.div>

@@ -214,7 +214,7 @@ export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
 
         const submitToast = toast.loading('Updating ebook...');
 
-        try {
+ 
             const token = session?.session?.token || session?.token;
 
             if (!token) {
@@ -223,7 +223,7 @@ export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
 
             const payload = await Updatekbooks(token, bookid, ebookData);
             
-            if (payload?.success || payload?.insertedId) {
+            if (payload?.success) {
                 setCompany(ebookData);
                 setErrors({});
                 setIsEditing(false);
@@ -237,18 +237,7 @@ export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
                 });
                 
                 setTimeout(() => setSuccessMessage(''), 5000);
-            } else {
-                throw new Error(payload?.error || "Failed to update ebook");
-            }
-        } catch (error) {
-            console.error("Error updating ebook:", error);
-            const errorMsg = error.message || "Failed to update ebook";
-            setErrors(prev => ({ ...prev, submit: errorMsg }));
-            toast.error(errorMsg, {
-                id: submitToast,
-                duration: 5000,
-            });
-        } finally {
+            
             setIsSubmitting(false);
         }
     };
@@ -337,13 +326,13 @@ export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
                                 className="text-2xl font-bold text-gray-900"
                                 variants={itemVariants}
                             >
-                                Create Your First Ebook
+                                Edite Your Ebook
                             </motion.h2>
                             <motion.p 
                                 className="text-gray-600 max-w-sm mx-auto"
                                 variants={itemVariants}
                             >
-                                Start your publishing journey by creating your first ebook. 
+                                Start your publishing journey by Edite your ebook. 
                                 Fill in the details and share your story with the world.
                             </motion.p>
                         </div>
@@ -354,7 +343,7 @@ export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
                             whileTap={{ scale: 0.95 }}
                             variants={itemVariants}
                         >
-                            Create Ebook <ArrowRight size={18} />
+                            Edite Ebook <ArrowRight size={18} />
                         </motion.button>
                     </motion.div>
                 </motion.div>
@@ -817,22 +806,27 @@ export default function Editepaghe({ bookid, id, companys, recuiterdata }) {
                             )}
                             <motion.button
                                 type="submit"
-                                disabled={isSubmitting}
+                                // disabled={isSubmitting}
                                 className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold hover:from-blue-700 hover:to-indigo-700 rounded-xl px-8 py-3 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                             >
-                                {isSubmitting ? (
+                                {/* {isSubmitting ? ( 
                                     <>
                                         <Loader2 size={18} className="animate-spin" />
                                         Updating...
                                     </>
-                                ) : (
+                                 ) : (
                                     <>
                                         <Save size={18} />
                                         Update Ebook
                                     </>
-                                )}
+                                )} */}
+                                
+                                    <>
+                                        <Save size={18} />
+                                        Update Ebook
+                                    </>
                             </motion.button>
                         </motion.div>
                     </form>
