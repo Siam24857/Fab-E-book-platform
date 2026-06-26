@@ -200,15 +200,6 @@ export default function TopWriters() {
                     </span>
                   </motion.div>
 
-                  <motion.div 
-                    variants={iconVariants}
-                    className="flex items-center gap-1.5 sm:gap-2 bg-yellow-50 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full"
-                  >
-                    <Star size={16} className="sm:w-[18px] sm:h-[18px] text-yellow-500" />
-                    <span className="text-sm sm:text-base font-medium text-yellow-700">
-                      {writer.rating} ★
-                    </span>
-                  </motion.div>
                 </div>
 
                 {/* Additional Info */}
@@ -220,7 +211,7 @@ export default function TopWriters() {
                   className="mt-4 sm:mt-5 flex items-center justify-between text-xs sm:text-sm text-gray-500"
                 >
                   <span>{writer.books} books published</span>
-                  <span className="text-indigo-600 font-medium">View Profile →</span>
+                  <span className="text-indigo-600 font-medium">Verifed</span>
                 </motion.div>
               </motion.div>
             </motion.div>
@@ -235,14 +226,7 @@ export default function TopWriters() {
           viewport={{ once: true }}
           className="text-center mt-10 sm:mt-12 md:mt-14"
         >
-          <motion.button
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => toast.success('Loading all writers...')}
-            className="px-6 sm:px-8 py-2.5 sm:py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors text-sm sm:text-base shadow-md hover:shadow-lg"
-          >
-            View All Writers
-          </motion.button>
+           
         </motion.div>
       </div>
     </section>
