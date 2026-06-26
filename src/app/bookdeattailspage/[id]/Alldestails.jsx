@@ -104,16 +104,19 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
     const isWriter = userRole === 'writer';
     const isReader = userRole === 'reader';
     
-    // ✅ Determine if user can view content
-    const canViewContent = isWriterOrAdmin || hasPurchased;
+    // ✅ ONLY READERS WHO PURCHASED CAN VIEW CONTENT
+    // Writers and Admins CANNOT view content (they can't purchase)
+    const canViewContent = isReader && hasPurchased;
     
-    // ✅ Writer cannot purchase (disabled button)
+    // ✅ Only readers who haven't purchased can buy
     const canPurchase = isReader && !hasPurchased;
 
     console.log('hasPurchased:', hasPurchased);
     console.log('canViewContent:', canViewContent);
-    console.log('isWriterOrAdmin:', isWriterOrAdmin);
     console.log('canPurchase:', canPurchase);
+    console.log('isReader:', isReader);
+    console.log('isWriter:', isWriter);
+    console.log('isAdmin:', isAdmin);
 
     // State for bookmark
     const [isBookmarked, setIsBookmarked] = useState(false);
@@ -329,14 +332,16 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                                 {safeBook.genre}
                             </span>
                             
-                            {isWriterOrAdmin && (
-                                <span className={`inline-flex items-center gap-1 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium ${
-                                    isAdmin 
-                                        ? 'bg-purple-100 text-purple-800' 
-                                        : 'bg-amber-100 text-amber-800'
-                                }`}>
-                                    {isAdmin ? <Shield size={14} /> : <PenLine size={14} />}
-                                    {isAdmin ? 'Admin' : 'Writer'}
+                            {isWriter && (
+                                <span className="inline-flex items-center gap-1 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium bg-amber-100 text-amber-800">
+                                    <PenLine size={14} />
+                                    Writer
+                                </span>
+                            )}
+                            {isAdmin && (
+                                <span className="inline-flex items-center gap-1 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium bg-purple-100 text-purple-800">
+                                    <Shield size={14} />
+                                    Admin
                                 </span>
                             )}
                             {isReader && hasPurchased && (
@@ -377,7 +382,7 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                             {safeBook.description}
                         </p>
 
-                        {/* Actions - FIXED */}
+                        {/* Actions */}
                         <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 sm:gap-5">
                             <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900">
                                 ${Number(safeBook.price).toFixed(2)}
@@ -407,29 +412,29 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                                     ✅ Already Purchased
                                 </button>
                             ) : isWriter ? (
-                                // Writer - disabled button with message
+                                // Writer - cannot purchase
                                 <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
-                                    <div className="bg-gray-300 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-gray-500 w-full sm:w-auto cursor-not-allowed opacity-70">
+                                    <div className="bg-gray-200 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-gray-500 w-full sm:w-auto cursor-not-allowed">
                                         <span className="flex items-center gap-2">
                                             <PenLine size={20} />
-                                            Writers Cannot Purchase
+                                            ❌ Writers Cannot Purchase
                                         </span>
                                     </div>
-                                    <p className="text-xs text-amber-600 italic">
-                                        ✏️ Writers have free access to all content
+                                    <p className="text-xs text-gray-500 italic">
+                                        Writers can only create content, not purchase
                                     </p>
                                 </div>
                             ) : isAdmin ? (
-                                // Admin - disabled button with message
+                                // Admin - cannot purchase
                                 <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
-                                    <div className="bg-gray-300 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-gray-500 w-full sm:w-auto cursor-not-allowed opacity-70">
+                                    <div className="bg-gray-200 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-gray-500 w-full sm:w-auto cursor-not-allowed">
                                         <span className="flex items-center gap-2">
                                             <Shield size={20} />
-                                            Admin Access Only
+                                            ❌ Admins Cannot Purchase
                                         </span>
                                     </div>
-                                    <p className="text-xs text-purple-600 italic">
-                                        👑 Admins have full access to all content
+                                    <p className="text-xs text-gray-500 italic">
+                                        Admins manage content, not purchase
                                     </p>
                                 </div>
                             ) : null}
@@ -454,7 +459,7 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
 
                         <hr className="my-8 sm:my-10 border-stone-300" />
 
-                        {/* Content Section - FIXED */}
+                        {/* Content Section - ONLY READERS WHO PURCHASED CAN VIEW */}
                         <div className={`flex flex-col items-start gap-3 sm:gap-4 border p-4 sm:p-6 ${
                             canViewContent 
                                 ? 'border-green-300 bg-green-50' 
@@ -468,31 +473,39 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                             </div>
                             
                             {canViewContent ? (
-                                // ✅ Content visible to ADMIN, WRITER, and READERS who purchased
+                                // ✅ ONLY READERS WHO PURCHASED can see content
                                 <div className="w-full">
                                     <div className="prose prose-stone max-w-none">
                                         <div className="whitespace-pre-wrap text-base sm:text-lg leading-7 sm:leading-9 text-stone-700">
                                             {safeBook.content}
                                         </div>
                                     </div>
-                                    {isAdmin && (
-                                        <p className="text-xs text-purple-600 mt-3 italic">
-                                            👑 Admin Access - Full content visible
-                                        </p>
-                                    )}
-                                    {isWriter && (
-                                        <p className="text-xs text-amber-600 mt-3 italic">
-                                            ✏️ Writer Access - Full content visible (free access)
-                                        </p>
-                                    )}
-                                    {isReader && hasPurchased && (
-                                        <p className="text-xs text-green-600 mt-3 italic">
+                                    <div className="mt-3 p-3 bg-green-100 border border-green-300 rounded">
+                                        <p className="text-sm text-green-700 flex items-center gap-2">
                                             ✅ Purchased Access - Thank you for your purchase!
                                         </p>
-                                    )}
+                                    </div>
+                                </div>
+                            ) : isWriter || isAdmin ? (
+                                // ❌ Writers and Admins see this message
+                                <div className="w-full text-center py-6">
+                                    <div className="flex flex-col items-center gap-3">
+                                        <div className="bg-gray-100 p-4 rounded-full">
+                                            {isWriter ? <PenLine size={48} className="text-gray-400" /> : <Shield size={48} className="text-gray-400" />}
+                                        </div>
+                                        <p className="text-lg font-semibold text-gray-600">
+                                            {isWriter ? '✏️ Writers Cannot Access Content' : '👑 Admins Cannot Access Content'}
+                                        </p>
+                                        <p className="text-sm text-gray-500 max-w-md">
+                                            {isWriter 
+                                                ? 'Writers can create and manage books but cannot read purchased content. Please switch to a reader account to purchase and read books.'
+                                                : 'Admins manage the platform but cannot read purchased content. Please switch to a reader account to purchase and read books.'
+                                            }
+                                        </p>
+                                    </div>
                                 </div>
                             ) : (
-                                // ❌ Content locked - show purchase prompt (only for readers who haven't purchased)
+                                // ❌ Readers who haven't purchased see this message
                                 <div className="w-full text-center py-6">
                                     <p className="text-base sm:text-lg text-gray-500">
                                         Purchase this ebook to read the full content.
