@@ -8,9 +8,9 @@ import toast, { Toaster } from 'react-hot-toast';
 
 const HeroBanner = () => {
   const stats = [
-    { icon: BookOpen, label: "Ebooks Available", value: "10,000+" },
-    { icon: Users, label: "Active Readers", value: "50,000+" },
-    { icon: Award, label: "Top Writers", value: "500+" },
+    { icon: BookOpen, label: "Ebooks Available", value: "34+" },
+    { icon: Users, label: "Active Readers", value: "19+" },
+    { icon: Award, label: "Top Writers", value: "16+" },
   ];
 
   // Book image URLs - Replace with your actual images
