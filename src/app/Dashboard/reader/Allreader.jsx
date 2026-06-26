@@ -279,21 +279,13 @@ const Readerpage = ({ historyData = [] }) => {
                   
                   {/* CRUD Actions with Toast */}
                   <div className="flex gap-2">
-                    <button
-                      onClick={() => handleUpdatePurchase(index, {
-                        amount: (book?.amount || 0) + 1
-                      })}
-                      disabled={isCRUDLoading}
-                      className="text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm transition disabled:opacity-50"
-                    >
-                      Edit
-                    </button>
+                     
                     <button
                       onClick={() => handleDeletePurchase(index)}
                       disabled={isCRUDLoading}
-                      className="text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm transition disabled:opacity-50"
+                      className="text-green-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs sm:text-sm transition disabled:opacity-50"
                     >
-                      Delete
+                       Purcesd
                     </button>
                   </div>
                 </div>
