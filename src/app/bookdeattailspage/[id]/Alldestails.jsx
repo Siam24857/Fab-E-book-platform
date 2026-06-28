@@ -505,7 +505,7 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                                     </div>
                                 </div>
                             ) : (
-                                // ❌ Readers who haven't purchased see this message
+                     
                                 <div className="w-full text-center py-6">
                                     <p className="text-base sm:text-lg text-gray-500">
                                         Purchase this ebook to read the full content.

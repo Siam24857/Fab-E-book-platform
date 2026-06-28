@@ -13,21 +13,22 @@ const HeroBanner = () => {
     { icon: Award, label: "Top Writers", value: "16+" },
   ];
 
+
+
   // Book image URLs - Replace with your actual images
   const bookImages = {
     story: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop",
     adventure: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop",
     featured: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&h=600&fit=crop",
   };
-
-  // Handle browse books click
+ 
   const handleBrowseClick = (e) => {
     if (!e.target.closest('a')) {
       toast.success('Loading books...');
     }
   };
 
-  // Handle start reading click
+ 
   const handleStartReading = (e) => {
     if (!e.target.closest('a')) {
       toast('Please login to start reading', {
