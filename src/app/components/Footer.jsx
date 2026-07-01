@@ -129,7 +129,7 @@ export default function Footer() {
               whileTap={{ scale: 0.97 }}
             >
               <Link
-                href="/write"
+                href="/Singup"
                 className="inline-flex items-center px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-[#111827] font-semibold rounded-lg hover:bg-gray-100 transition-colors text-sm sm:text-base w-full sm:w-auto justify-center sm:justify-start"
                 onClick={handleStartWriting}
               >

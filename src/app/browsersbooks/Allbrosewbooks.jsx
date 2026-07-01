@@ -386,8 +386,7 @@ export default function BookStore({ BOOKS }) {
               </div>
             </div>
           </aside>
-
-          {/* Book Grid */}
+ 
           <main className="flex-1 min-w-0">
             {paginatedBooks.length === 0 ? (
               <div className="text-center py-20 bg-white/60 backdrop-blur-sm rounded-3xl border border-white/50 shadow-xl shadow-black/5">
@@ -523,8 +522,7 @@ export default function BookStore({ BOOKS }) {
           </main>
         </div>
       </div>
-
-      {/* Premium Footer */}
+ 
       <footer className="relative mt-16 border-t border-white/20 bg-white/30 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -542,8 +540,7 @@ export default function BookStore({ BOOKS }) {
           </div>
         </div>
       </footer>
-
-      {/* Add animation styles */}
+ 
       <style jsx>{`
         @keyframes fadeInUp {
           from {
@@ -563,3 +560,8 @@ export default function BookStore({ BOOKS }) {
     </div>
   );
 }
+
+
+
+
+
