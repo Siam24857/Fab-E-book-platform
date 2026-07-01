@@ -1,7 +1,7 @@
 "use client";
 
 import { Bookmarkbooks } from "@/app/Action/Bookmarkfuctionalyti";
-import { Calendar, Tag, User, Bookmark, Lock, Shield, PenLine, Eye } from "lucide-react";
+import { Calendar, Tag, User, Bookmark, Lock, Shield, PenLine, Eye, Heart, Share2, Download, Star, BookOpen, CheckCircle, AlertCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import toast, { Toaster } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
@@ -9,10 +9,8 @@ import { useRouter } from 'next/navigation';
 export default function BookDetailsPage({ book, paymented, userId, userRole }) {
     const router = useRouter();
     
-    // ✅ EARLY RETURN - Check authentication FIRST before any other code
     const isAuthenticated = userId && userRole;
     
-    // ✅ Redirect to login if not authenticated
     useEffect(() => {
         if (!isAuthenticated) {
             localStorage.setItem('redirectAfterLogin', window.location.pathname);
@@ -20,23 +18,22 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         }
     }, [isAuthenticated, router]);
 
-    // ✅ EARLY RETURN - Show loading state if not authenticated
     if (!isAuthenticated) {
         return (
-            <div className="min-h-screen bg-stone-100 flex items-center justify-center">
+            <div className="min-h-screen bg-gradient-to-br from-stone-50 to-stone-100 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stone-900 mx-auto"></div>
-                    <p className="mt-4 text-stone-600">Redirecting to login...</p>
+                    <div className="relative">
+                        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-stone-900 mx-auto"></div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <BookOpen size={20} className="text-stone-900" />
+                        </div>
+                    </div>
+                    <p className="mt-6 text-stone-600 font-medium">Redirecting to login...</p>
                 </div>
             </div>
         );
     }
 
-    console.log('User ID:', userId);
-    console.log('User Role:', userRole);
-    console.log('Payment status:', paymented);
-    
-    // ✅ Extract book data from wrapped response
     const extractBookData = (data) => {
         if (data && typeof data === 'object') {
             if (data.success && data.data && typeof data.data === 'object') {
@@ -54,7 +51,6 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
 
     const rawBook = extractBookData(book);
 
-    // ✅ Safe book data extraction with fallbacks
     const safeBook = {
         _id: rawBook?._id || rawBook?.productId || rawBook?.id || '',
         title: rawBook?.title || rawBook?.booktitle || 'Untitled Book',
@@ -69,7 +65,6 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         writerId: rawBook?.writerId || rawBook?.writer || rawBook?.authorId || ''
     };
 
-    // ✅ Check if user has actually purchased
     const hasPurchased = (() => {
         if (typeof paymented === 'boolean') {
             return paymented;
@@ -98,32 +93,18 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         return false;
     })();
 
-    // ✅ Check if user is writer or admin
     const isWriterOrAdmin = userRole === 'writer' || userRole === 'admin';
     const isAdmin = userRole === 'admin';
     const isWriter = userRole === 'writer';
     const isReader = userRole === 'reader';
     
-    // ✅ ONLY READERS WHO PURCHASED CAN VIEW CONTENT
-    // Writers and Admins CANNOT view content (they can't purchase)
     const canViewContent = isReader && hasPurchased;
-    
-    // ✅ Only readers who haven't purchased can buy
     const canPurchase = isReader && !hasPurchased;
 
-    console.log('hasPurchased:', hasPurchased);
-    console.log('canViewContent:', canViewContent);
-    console.log('canPurchase:', canPurchase);
-    console.log('isReader:', isReader);
-    console.log('isWriter:', isWriter);
-    console.log('isAdmin:', isAdmin);
-
-    // State for bookmark
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [loading, setLoading] = useState(false);
     const [bookmarkId, setBookmarkId] = useState(null);
 
-    // Load bookmark status from localStorage on mount
     useEffect(() => {
         const checkBookmarkStatus = () => {
             try {
@@ -152,7 +133,6 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         }
     }, [safeBook._id]);
 
-    // Save to localStorage function
     const saveBookmarkToLocalStorage = (bookData) => {
         try {
             const savedBookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
@@ -179,7 +159,6 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         }
     };
 
-    // Remove from localStorage function
     const removeBookmarkFromLocalStorage = (bookId) => {
         try {
             const savedBookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
@@ -192,7 +171,6 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         }
     };
 
-    // Toggle bookmark function
     const toggleBookmark = async () => {
         if (!userId) {
             toast.error('Please login to bookmark books');
@@ -267,7 +245,6 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         }
     };
 
-    // Format date for display
     const formatDate = (dateString) => {
         try {
             const date = new Date(dateString);
@@ -284,15 +261,22 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
         }
     };
 
+    // Generate star rating (sample)
+    const rating = 4.5;
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+
     return (
-        <div className="min-h-screen bg-stone-100">
+        <div className="min-h-screen bg-gradient-to-br from-stone-50 via-white to-stone-50">
             <Toaster 
                 position="top-right"
                 toastOptions={{
                     duration: 3000,
                     style: {
-                        background: '#363636',
+                        background: '#1c1c1e',
                         color: '#fff',
+                        borderRadius: '12px',
+                        padding: '16px',
                     },
                     success: {
                         duration: 3000,
@@ -311,210 +295,285 @@ export default function BookDetailsPage({ book, paymented, userId, userRole }) {
                 }}
             />
 
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-                <div className="grid gap-8 md:gap-12 lg:grid-cols-[320px_1fr]">
-                    {/* Cover */}
-                    <div className="max-w-[280px] sm:max-w-[320px] mx-auto lg:mx-0 w-full">
-                        <img
-                            src={safeBook.cover}
-                            alt={safeBook.title}
-                            className="w-full rounded-sm object-cover shadow-sm"
-                            onError={(e) => {
-                                e.target.src = '/default-cover.jpg';
-                            }}
-                        />
+            {/* Breadcrumb */}
+            <div className="border-b border-stone-200/80 bg-white/50 backdrop-blur-sm">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <nav className="flex items-center gap-2 text-sm">
+                        <a href="/" className="text-stone-500 hover:text-stone-900 transition-colors">Home</a>
+                        <span className="text-stone-300">/</span>
+                        <a href="/books" className="text-stone-500 hover:text-stone-900 transition-colors">Books</a>
+                        <span className="text-stone-300">/</span>
+                        <span className="text-stone-900 font-medium truncate">{safeBook.title}</span>
+                    </nav>
+                </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+                <div className="grid gap-10 lg:gap-14 lg:grid-cols-[340px_1fr]">
+                    {/* Cover Section */}
+                    <div className="relative">
+                        <div className="sticky top-8">
+                            <div className="relative group">
+                                <div className="absolute -inset-1 bg-gradient-to-r from-stone-200 to-stone-300 rounded-lg blur-xl opacity-50 group-hover:opacity-75 transition duration-500"></div>
+                                <div className="relative rounded-lg overflow-hidden shadow-2xl">
+                                    <img
+                                        src={safeBook.cover}
+                                        alt={safeBook.title}
+                                        className="w-full aspect-[3/4] object-cover transition duration-500 group-hover:scale-105"
+                                        onError={(e) => {
+                                            e.target.src = '/default-cover.jpg';
+                                        }}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
+                                </div>
+                            </div>
+
+                            {/* Quick Stats */}
+                            <div className="mt-6 grid grid-cols-3 gap-3">
+                                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 text-center border border-stone-200/50">
+                                    <p className="text-2xl font-bold text-stone-900">4.5</p>
+                                    <p className="text-xs text-stone-500">Rating</p>
+                                </div>
+                                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 text-center border border-stone-200/50">
+                                    <p className="text-2xl font-bold text-stone-900">1.2K</p>
+                                    <p className="text-xs text-stone-500">Readers</p>
+                                </div>
+                                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 text-center border border-stone-200/50">
+                                    <p className="text-2xl font-bold text-stone-900">85%</p>
+                                    <p className="text-xs text-stone-500">Likes</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* Details */}
+                    {/* Details Section */}
                     <div>
-                        <div className="flex flex-wrap items-center gap-2">
-                            <span className="inline-block bg-stone-200 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium">
+                        {/* Tags & Badges */}
+                        <div className="flex flex-wrap items-center gap-2 mb-4">
+                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-stone-900 text-white rounded-full">
+                                <Tag size={12} />
                                 {safeBook.genre}
                             </span>
                             
                             {isWriter && (
-                                <span className="inline-flex items-center gap-1 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium bg-amber-100 text-amber-800">
-                                    <PenLine size={14} />
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">
+                                    <PenLine size={12} />
                                     Writer
                                 </span>
                             )}
                             {isAdmin && (
-                                <span className="inline-flex items-center gap-1 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium bg-purple-100 text-purple-800">
-                                    <Shield size={14} />
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
+                                    <Shield size={12} />
                                     Admin
                                 </span>
                             )}
                             {isReader && hasPurchased && (
-                                <span className="inline-flex items-center gap-1 px-3 sm:px-4 py-1 text-xs sm:text-sm font-medium bg-green-100 text-green-800">
-                                    ✅ Purchased
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-emerald-100 text-emerald-800 rounded-full">
+                                    <CheckCircle size={12} />
+                                    Purchased
+                                </span>
+                            )}
+                            {safeBook.status === 'Available' ? (
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                                    Available
+                                </span>
+                            ) : (
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                                    <AlertCircle size={12} />
+                                    Unavailable
                                 </span>
                             )}
                         </div>
 
-                        <h1 className="mt-4 sm:mt-5 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 leading-tight">
+                        {/* Title */}
+                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 leading-[1.1] tracking-tight">
                             {safeBook.title}
                         </h1>
 
-                        <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 text-sm sm:text-base text-stone-600">
-                            <div className="flex items-center gap-1.5 sm:gap-2">
-                                <User size={16} className="sm:w-[18px] sm:h-[18px]" />
-                                <span>{safeBook.author}</span>
+                        {/* Author & Meta */}
+                        <div className="mt-5 flex flex-wrap items-center gap-6 text-sm text-stone-600">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center">
+                                    <User size={16} className="text-stone-600" />
+                                </div>
+                                <span className="font-medium text-stone-900">{safeBook.author}</span>
                             </div>
-
-                            <div className="flex items-center gap-1.5 sm:gap-2">
-                                <Calendar size={16} className="sm:w-[18px] sm:h-[18px]" />
+                            <div className="flex items-center gap-2">
+                                <Calendar size={16} className="text-stone-400" />
                                 <span>{formatDate(safeBook.publishedAt)}</span>
                             </div>
+                        </div>
 
-                            <div className="flex items-center gap-1.5 sm:gap-2">
-                                <Tag size={16} className="sm:w-[18px] sm:h-[18px]" />
-                                <span>{safeBook.status}</span>
+                        {/* Rating Stars */}
+                        <div className="mt-4 flex items-center gap-3">
+                            <div className="flex items-center gap-1">
+                                {[...Array(5)].map((_, i) => (
+                                    <Star key={i} size={18} className={`${
+                                        i < fullStars ? 'text-yellow-400 fill-yellow-400' :
+                                        i === fullStars && hasHalfStar ? 'text-yellow-400 fill-yellow-400' :
+                                        'text-stone-300'
+                                    }`} />
+                                ))}
+                            </div>
+                            <span className="text-sm font-medium text-stone-900">4.5</span>
+                            <span className="text-sm text-stone-400">(1,234 reviews)</span>
+                        </div>
+
+                        <hr className="my-8 border-stone-200" />
+
+                        {/* Description */}
+                        <div>
+                            <h2 className="text-xl font-semibold text-stone-900 mb-3">About This Book</h2>
+                            <p className="text-base leading-relaxed text-stone-600 max-w-3xl">
+                                {safeBook.description}
+                            </p>
+                        </div>
+
+                        {/* Price & Actions */}
+                        <div className="mt-8 p-6 bg-white rounded-2xl border border-stone-200 shadow-sm">
+                            <div className="flex flex-wrap items-center justify-between gap-4">
+                                <div>
+                                    <p className="text-sm text-stone-500">Price</p>
+                                    <p className="text-4xl font-bold text-stone-900">
+                                        ${Number(safeBook.price).toFixed(2)}
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-3">
+                                    {canPurchase ? (
+                                        <form action="/api/checkout_sessions" method="POST">
+                                            <input type="hidden" name="price" defaultValue={safeBook.price} />
+                                            <input type="hidden" name="productid" defaultValue={safeBook._id} />
+                                            <input type="hidden" name="image" defaultValue={safeBook.cover} />
+                                            <input type="hidden" name="title" defaultValue={safeBook.title} />
+                                            <input type="hidden" name="writerid" defaultValue={safeBook.writerId} />
+                                            <button 
+                                                type="submit" 
+                                                className="group relative px-8 py-3.5 bg-gradient-to-r from-stone-900 to-stone-800 text-white font-semibold rounded-full overflow-hidden transition-all duration-300 hover:shadow-xl hover:scale-105"
+                                            >
+                                                <span className="relative z-10 flex items-center gap-2">
+                                                    Buy Now
+                                                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </span>
+                                                <div className="absolute inset-0 bg-gradient-to-r from-stone-800 to-stone-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                            </button>
+                                        </form>
+                                    ) : isReader && hasPurchased ? (
+                                        <div className="flex items-center gap-3 px-8 py-3.5 bg-emerald-50 border-2 border-emerald-200 rounded-full">
+                                            <CheckCircle size={20} className="text-emerald-600" />
+                                            <span className="font-semibold text-emerald-700">Already Purchased</span>
+                                        </div>
+                                    ) : isWriter ? (
+                                        <div className="flex items-center gap-3 px-6 py-3.5 bg-amber-50 border-2 border-amber-200 rounded-full">
+                                            <PenLine size={18} className="text-amber-600" />
+                                            <span className="font-semibold text-amber-700">Writer Account</span>
+                                        </div>
+                                    ) : isAdmin ? (
+                                        <div className="flex items-center gap-3 px-6 py-3.5 bg-purple-50 border-2 border-purple-200 rounded-full">
+                                            <Shield size={18} className="text-purple-600" />
+                                            <span className="font-semibold text-purple-700">Admin Account</span>
+                                        </div>
+                                    ) : null}
+
+                                    <button
+                                        onClick={toggleBookmark}
+                                        disabled={loading || !safeBook._id}
+                                        className={`group relative p-3.5 rounded-full transition-all duration-300 ${
+                                            isBookmarked 
+                                                ? 'bg-stone-900 text-white hover:bg-stone-800' 
+                                                : 'bg-stone-100 text-stone-600 hover:bg-stone-200'
+                                        } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        aria-label={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
+                                    >
+                                        <Heart 
+                                            size={20} 
+                                            className="transition-transform group-hover:scale-110"
+                                            fill={isBookmarked ? 'currentColor' : 'none'}
+                                        />
+                                    </button>
+
+                                    <button className="p-3.5 bg-stone-100 text-stone-600 rounded-full hover:bg-stone-200 transition-colors duration-300">
+                                        <Share2 size={20} />
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
-                        <hr className="my-6 sm:my-8 border-stone-300" />
-
-                        <h2 className="mb-3 sm:mb-4 text-2xl sm:text-3xl font-semibold">
-                            Description
-                        </h2>
-
-                        <p className="max-w-4xl text-base sm:text-lg leading-7 sm:leading-9 text-stone-700">
-                            {safeBook.description}
-                        </p>
-
-                        {/* Actions */}
-                        <div className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 sm:gap-5">
-                            <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-stone-900">
-                                ${Number(safeBook.price).toFixed(2)}
-                            </span>
-
-                            {/* Only readers who haven't purchased can buy */}
-                            {canPurchase ? (
-                                <form action="/api/checkout_sessions" method="POST" className="w-full sm:w-auto">
-                                    <input type="hidden" name="price" defaultValue={safeBook.price} />
-                                    <input type="hidden" name="productid" defaultValue={safeBook._id} />
-                                    <input type="hidden" name="image" defaultValue={safeBook.cover} />
-                                    <input type="hidden" name="title" defaultValue={safeBook.title} />
-                                    <input type="hidden" name="writerid" defaultValue={safeBook.writerId} />
-                                    <section>
-                                        <button 
-                                            type="submit" 
-                                            role="link" 
-                                            className="bg-red-700 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white transition hover:bg-red-800 w-full sm:w-auto"
-                                        >
-                                            Buy Now
-                                        </button>
-                                    </section>
-                                </form>
-                            ) : isReader && hasPurchased ? (
-                                // Reader who already purchased
-                                <button className="bg-green-700 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-white w-full sm:w-auto cursor-default">
-                                    ✅ Already Purchased
-                                </button>
-                            ) : isWriter ? (
-                                // Writer - cannot purchase
-                                <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
-                                    <div className="bg-gray-200 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-gray-500 w-full sm:w-auto cursor-not-allowed">
-                                        <span className="flex items-center gap-2">
-                                            <PenLine size={20} />
-                                            ❌ Writers Cannot Purchase
-                                        </span>
+                        {/* Content Section */}
+                        <div className="mt-8">
+                            <div className={`rounded-2xl border-2 overflow-hidden transition-all duration-300 ${
+                                canViewContent 
+                                    ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-white' 
+                                    : 'border-stone-200 bg-white'
+                            }`}>
+                                <div className={`px-6 py-4 border-b ${
+                                    canViewContent ? 'border-emerald-200 bg-emerald-50/50' : 'border-stone-200 bg-stone-50/50'
+                                }`}>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            {canViewContent ? (
+                                                <Eye size={20} className="text-emerald-600" />
+                                            ) : (
+                                                <Lock size={20} className="text-stone-400" />
+                                            )}
+                                            <span className={`font-semibold ${
+                                                canViewContent ? 'text-emerald-700' : 'text-stone-600'
+                                            }`}>
+                                                {canViewContent ? '📖 Full Content Access' : '🔒 Content Locked'}
+                                            </span>
+                                        </div>
+                                        {canViewContent && (
+                                            <span className="text-xs font-medium text-emerald-600 bg-emerald-100 px-3 py-1 rounded-full">
+                                                Purchased
+                                            </span>
+                                        )}
                                     </div>
-                                    <p className="text-xs text-gray-500 italic">
-                                        Writers can only create content, not purchase
-                                    </p>
                                 </div>
-                            ) : isAdmin ? (
-                                // Admin - cannot purchase
-                                <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
-                                    <div className="bg-gray-200 px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold text-gray-500 w-full sm:w-auto cursor-not-allowed">
-                                        <span className="flex items-center gap-2">
-                                            <Shield size={20} />
-                                            ❌ Admins Cannot Purchase
-                                        </span>
-                                    </div>
-                                    <p className="text-xs text-gray-500 italic">
-                                        Admins manage content, not purchase
-                                    </p>
+                                
+                                <div className="p-6">
+                                    {canViewContent ? (
+                                        <div className="prose prose-stone max-w-none">
+                                            <div className="whitespace-pre-wrap text-base leading-8 text-stone-700">
+                                                {safeBook.content}
+                                            </div>
+                                            <div className="mt-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                                <p className="text-sm text-emerald-700 flex items-center gap-2">
+                                                    <CheckCircle size={16} className="text-emerald-600" />
+                                                    Thank you for purchasing this book. Enjoy your reading!
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : isWriter || isAdmin ? (
+                                        <div className="text-center py-8">
+                                            <div className="inline-flex p-4 bg-stone-100 rounded-full mb-4">
+                                                {isWriter ? <PenLine size={40} className="text-stone-400" /> : <Shield size={40} className="text-stone-400" />}
+                                            </div>
+                                            <h3 className="text-lg font-semibold text-stone-700 mb-2">
+                                                {isWriter ? '✏️ Writers Cannot Access Content' : '👑 Admins Cannot Access Content'}
+                                            </h3>
+                                            <p className="text-sm text-stone-500 max-w-md mx-auto">
+                                                {isWriter 
+                                                    ? 'Writers can create and manage books but cannot read purchased content.'
+                                                    : 'Admins manage the platform but cannot read purchased content.'
+                                                }
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-8">
+                                            <div className="inline-flex p-4 bg-stone-100 rounded-full mb-4">
+                                                <Lock size={40} className="text-stone-400" />
+                                            </div>
+                                            <h3 className="text-lg font-semibold text-stone-700 mb-2">Purchase to Read</h3>
+                                            <p className="text-sm text-stone-500 max-w-md mx-auto">
+                                                Buy this ebook to unlock the full content and start reading.
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
-                            ) : null}
-
-                            <button
-                                onClick={toggleBookmark}
-                                disabled={loading || !safeBook._id}
-                                className={`border border-stone-300 p-3 sm:p-4 transition hover:bg-stone-200 ${
-                                    isBookmarked 
-                                        ? 'bg-stone-800 text-white hover:bg-stone-700' 
-                                        : 'bg-transparent text-stone-700'
-                                } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                aria-label={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
-                            >
-                                <Bookmark 
-                                    size={18} 
-                                    className="sm:w-[22px] sm:h-[22px]"
-                                    fill={isBookmarked ? 'currentColor' : 'none'}
-                                />
-                            </button>
-                        </div>
-
-                        <hr className="my-8 sm:my-10 border-stone-300" />
-
-                        {/* Content Section - ONLY READERS WHO PURCHASED CAN VIEW */}
-                        <div className={`flex flex-col items-start gap-3 sm:gap-4 border p-4 sm:p-6 ${
-                            canViewContent 
-                                ? 'border-green-300 bg-green-50' 
-                                : 'border-stone-300 bg-stone-50'
-                        }`}>
-                            <div className="flex items-center gap-3">
-                                <Lock size={20} className="sm:w-[24px] sm:h-[24px] flex-shrink-0" />
-                                <span className="font-semibold text-sm sm:text-base">
-                                    {canViewContent ? '📖 Full Content' : '🔒 Content Locked'}
-                                </span>
                             </div>
-                            
-                            {canViewContent ? (
-                                // ✅ ONLY READERS WHO PURCHASED can see content
-                                <div className="w-full">
-                                    <div className="prose prose-stone max-w-none">
-                                        <div className="whitespace-pre-wrap text-base sm:text-lg leading-7 sm:leading-9 text-stone-700">
-                                            {safeBook.content}
-                                        </div>
-                                    </div>
-                                    <div className="mt-3 p-3 bg-green-100 border border-green-300 rounded">
-                                        <p className="text-sm text-green-700 flex items-center gap-2">
-                                            ✅ Purchased Access - Thank you for your purchase!
-                                        </p>
-                                    </div>
-                                </div>
-                            ) : isWriter || isAdmin ? (
-                                // ❌ Writers and Admins see this message
-                                <div className="w-full text-center py-6">
-                                    <div className="flex flex-col items-center gap-3">
-                                        <div className="bg-gray-100 p-4 rounded-full">
-                                            {isWriter ? <PenLine size={48} className="text-gray-400" /> : <Shield size={48} className="text-gray-400" />}
-                                        </div>
-                                        <p className="text-lg font-semibold text-gray-600">
-                                            {isWriter ? '✏️ Writers Cannot Access Content' : '👑 Admins Cannot Access Content'}
-                                        </p>
-                                        <p className="text-sm text-gray-500 max-w-md">
-                                            {isWriter 
-                                                ? 'Writers can create and manage books but cannot read purchased content. Please switch to a reader account to purchase and read books.'
-                                                : 'Admins manage the platform but cannot read purchased content. Please switch to a reader account to purchase and read books.'
-                                            }
-                                        </p>
-                                    </div>
-                                </div>
-                            ) : (
-                     
-                                <div className="w-full text-center py-6">
-                                    <p className="text-base sm:text-lg text-gray-500">
-                                        Purchase this ebook to read the full content.
-                                    </p>
-                                    <p className="text-sm text-gray-400 mt-2">
-                                        Click the Buy Now button above to unlock.
-                                    </p>
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>
