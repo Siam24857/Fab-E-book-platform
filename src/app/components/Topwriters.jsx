@@ -3,6 +3,7 @@
 import { TrendingUp, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import toast, { Toaster } from 'react-hot-toast';
+import { useEffect, useState } from "react";
 
 const writers = [
   {
@@ -29,6 +30,12 @@ const writers = [
 ];
 
 export default function TopWriters() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Handle writer card click
   const handleWriterClick = (writerName) => {
     toast.success(`Exploring ${writerName}'s profile`);
@@ -116,30 +123,32 @@ export default function TopWriters() {
           backgroundSize: '40px 40px',
         }} />
 
-        {/* Animated Floating Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {[...Array(6)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 bg-purple-400 rounded-full"
-              animate={{
-                x: [0, 100, 0],
-                y: [0, -50, 0],
-                scale: [1, 1.5, 1],
-                opacity: [0.2, 0.5, 0.2],
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 10 + i * 2,
-                delay: i * 1.5,
-              }}
-              style={{
-                left: `${10 + i * 15}%`,
-                top: `${20 + i * 10}%`,
-              }}
-            />
-          ))}
-        </div>
+        {/* Animated Floating Elements - Only render on client */}
+        {isMounted && (
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-purple-400 rounded-full"
+                animate={{
+                  x: [0, 100, 0],
+                  y: [0, -50, 0],
+                  scale: [1, 1.5, 1],
+                  opacity: [0.2, 0.5, 0.2],
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 10 + i * 2,
+                  delay: i * 1.5,
+                }}
+                style={{
+                  left: `${10 + i * 15}%`,
+                  top: `${20 + i * 10}%`,
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <Toaster 
@@ -191,85 +200,86 @@ export default function TopWriters() {
         </motion.div>
 
         {/* Cards */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-7"
-        >
-          {writers.map((writer, index) => (
-            <motion.div
-              key={index}
-              variants={itemVariants}
-              whileHover="hover"
-              whileTap="tap"
-              initial="initial"
-              animate="animate"
-              className="cursor-pointer"
-              onClick={() => handleWriterClick(writer.name)}
-            >
+        {isMounted && (
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 md:gap-7"
+          >
+            {writers.map((writer, index) => (
               <motion.div
-                variants={cardHoverVariants}
-                className="border border-gray-200 sm:border-gray-300 bg-white/80 backdrop-blur-sm p-5 sm:p-6 md:p-7 hover:border-indigo-200 transition-colors rounded-lg shadow-sm hover:shadow-xl"
+                key={index}
+                variants={itemVariants}
+                whileHover="hover"
+                whileTap="tap"
+                initial="initial"
+                animate="animate"
+                className="cursor-pointer"
+                onClick={() => handleWriterClick(writer.name)}
               >
-                {/* Top */}
-                <div className="flex items-center gap-4 sm:gap-5">
-                  <motion.div
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center text-xl sm:text-2xl font-semibold shadow-md"
-                  >
-                    {writer.initial}
-                  </motion.div>
-
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-black truncate">
-                      {writer.name}
-                    </h3>
-                    <p className="text-sm sm:text-base md:text-lg text-[#8b6d56] truncate">
-                      Published Author
-                    </p>
-                  </div>
-                </div>
-
-                {/* Divider */}
                 <motion.div
-                  initial={{ scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                  viewport={{ once: true }}
-                  className="border-t border-gray-200 sm:border-gray-300 my-5 sm:my-6 md:my-7"
-                />
-
-                {/* Footer */}
-                <div className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 text-[#6b7280]">
-                  <motion.div 
-                    variants={iconVariants}
-                    className="flex items-center gap-1.5 sm:gap-2 bg-indigo-50 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full"
-                  >
-                    <TrendingUp size={16} className="sm:w-[18px] sm:h-[18px] text-indigo-600" />
-                    <span className="text-sm sm:text-base font-medium text-indigo-700">
-                      {writer.sales} sales
-                    </span>
-                  </motion.div>
-
-                </div>
-
-                {/* Additional Info */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: 0.3 }}
-                  viewport={{ once: true }}
-                  className="mt-4 sm:mt-5 flex items-center justify-between text-xs sm:text-sm text-gray-500"
+                  variants={cardHoverVariants}
+                  className="border border-gray-200 sm:border-gray-300 bg-white/80 backdrop-blur-sm p-5 sm:p-6 md:p-7 hover:border-indigo-200 transition-colors rounded-lg shadow-sm hover:shadow-xl"
                 >
-                  <span>{writer.books} books published</span>
-                  <span className="text-indigo-600 font-medium">Verified</span>
+                  {/* Top */}
+                  <div className="flex items-center gap-4 sm:gap-5">
+                    <motion.div
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                      className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center text-xl sm:text-2xl font-semibold shadow-md"
+                    >
+                      {writer.initial}
+                    </motion.div>
+
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-black truncate">
+                        {writer.name}
+                      </h3>
+                      <p className="text-sm sm:text-base md:text-lg text-[#8b6d56] truncate">
+                        Published Author
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    whileInView={{ scaleX: 1 }}
+                    transition={{ delay: 0.2, duration: 0.5 }}
+                    viewport={{ once: true }}
+                    className="border-t border-gray-200 sm:border-gray-300 my-5 sm:my-6 md:my-7"
+                  />
+
+                  {/* Footer */}
+                  <div className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 text-[#6b7280]">
+                    <motion.div 
+                      variants={iconVariants}
+                      className="flex items-center gap-1.5 sm:gap-2 bg-indigo-50 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full"
+                    >
+                      <TrendingUp size={16} className="sm:w-[18px] sm:h-[18px] text-indigo-600" />
+                      <span className="text-sm sm:text-base font-medium text-indigo-700">
+                        {writer.sales} sales
+                      </span>
+                    </motion.div>
+                  </div>
+
+                  {/* Additional Info */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    viewport={{ once: true }}
+                    className="mt-4 sm:mt-5 flex items-center justify-between text-xs sm:text-sm text-gray-500"
+                  >
+                    <span>{writer.books} books published</span>
+                    <span className="text-indigo-600 font-medium">Verified</span>
+                  </motion.div>
                 </motion.div>
               </motion.div>
-            </motion.div>
-          ))}
-        </motion.div>
+            ))}
+          </motion.div>
+        )}
 
         {/* View All Writers Button */}
         <motion.div
