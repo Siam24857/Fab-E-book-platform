@@ -4,16 +4,68 @@ import Link from "next/link";
 import Image from "next/image";
 import toast, { Toaster } from 'react-hot-toast';
 import { getSafeBookAuthor, getSafeBookPrice, getSafeBookTitle, getSafeImageSrc } from "../lib/image-utils";
+import { motion } from "framer-motion";
 
 export default async function FeaturedEbooks() {
   const books = await Somebookdata();
 
-   
-
   return (
-    <section className="bg-[#f8f6f4] py-12 sm:py-16 md:py-20">
+    <section className="bg-[#f8f6f4] py-12 sm:py-16 md:py-20 relative overflow-hidden">
+      {/* Premium Background Pattern */}
+      <div className="absolute inset-0">
+        {/* Main Gradient Orbs */}
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-purple-100/60 to-pink-100/40 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-gradient-to-tr from-blue-100/40 to-cyan-100/40 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-50/30 via-pink-50/30 to-blue-50/30 rounded-full blur-3xl" />
+        
+        {/* Geometric Pattern */}
+        <div className="absolute inset-0 opacity-[0.03]">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              linear-gradient(30deg, #8b5cf6 12%, transparent 12.5%, transparent 87%, #8b5cf6 87.5%, #8b5cf6),
+              linear-gradient(150deg, #8b5cf6 12%, transparent 12.5%, transparent 87%, #8b5cf6 87.5%, #8b5cf6),
+              linear-gradient(30deg, #8b5cf6 12%, transparent 12.5%, transparent 87%, #8b5cf6 87.5%, #8b5cf6),
+              linear-gradient(150deg, #8b5cf6 12%, transparent 12.5%, transparent 87%, #8b5cf6 87.5%, #8b5cf6)
+            `,
+            backgroundSize: '80px 140px',
+            backgroundPosition: '0 0, 0 0, 40px 70px, 40px 70px',
+          }} />
+        </div>
+
+        {/* Dot Pattern */}
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: 'radial-gradient(circle at 1px 1px, #8b5cf6 1px, transparent 0)',
+          backgroundSize: '40px 40px',
+        }} />
+
+        {/* Animated Floating Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-purple-400 rounded-full"
+              animate={{
+                x: [0, 100, 0],
+                y: [0, -50, 0],
+                scale: [1, 1.5, 1],
+                opacity: [0.2, 0.5, 0.2],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 10 + i * 2,
+                delay: i * 1.5,
+              }}
+              style={{
+                left: `${10 + i * 15}%`,
+                top: `${20 + i * 10}%`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* Toaster will be rendered on client side */}
-      <div id="toaster-container">
+      <div id="toaster-container" className="relative z-10">
         <Toaster 
           position="top-right"
           toastOptions={{
@@ -33,7 +85,7 @@ export default async function FeaturedEbooks() {
         />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4 mb-8 sm:mb-10 md:mb-12">
           <div>
@@ -65,7 +117,7 @@ export default async function FeaturedEbooks() {
               return (
                 <Link href={`/bookdeattailspage/${bookId}`} key={bookId}>
                   <div className="group cursor-pointer">
-                    <div className="overflow-hidden rounded-lg bg-gray-100">
+                    <div className="overflow-hidden rounded-lg bg-gray-100 shadow-md hover:shadow-xl transition-shadow duration-300">
                       <Image
                         src={coverSrc}
                         alt={title}
@@ -113,6 +165,9 @@ export default async function FeaturedEbooks() {
           </Link>
         </div>
       </div>
+
+      {/* Bottom Decorative Element */}
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent" />
     </section>
   );
 }

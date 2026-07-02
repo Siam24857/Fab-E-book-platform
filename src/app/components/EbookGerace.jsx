@@ -59,7 +59,60 @@ const EbookGenres = () => {
   };
 
   return (
-    <section className="py-12 sm:py-16 md:py-20 bg-gray-50">
+    <section className="py-12 sm:py-16 md:py-20 relative overflow-hidden bg-white">
+      {/* Premium Background Pattern - from HeroBanner */}
+      <div className="absolute inset-0">
+        {/* Main Gradient Orbs */}
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-purple-100/60 to-pink-100/40 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-gradient-to-tr from-blue-100/40 to-cyan-100/40 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-50/30 via-pink-50/30 to-blue-50/30 rounded-full blur-3xl" />
+        
+        {/* Geometric Pattern */}
+        <div className="absolute inset-0 opacity-[0.03]">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `
+              linear-gradient(30deg, #8b5cf6 12%, transparent 12.5%, transparent 87%, #8b5cf6 87.5%, #8b5cf6),
+              linear-gradient(150deg, #8b5cf6 12%, transparent 12.5%, transparent 87%, #8b5cf6 87.5%, #8b5cf6),
+              linear-gradient(30deg, #8b5cf6 12%, transparent 12.5%, transparent 87%, #8b5cf6 87.5%, #8b5cf6),
+              linear-gradient(150deg, #8b5cf6 12%, transparent 12.5%, transparent 87%, #8b5cf6 87.5%, #8b5cf6)
+            `,
+            backgroundSize: '80px 140px',
+            backgroundPosition: '0 0, 0 0, 40px 70px, 40px 70px',
+          }} />
+        </div>
+
+        {/* Dot Pattern */}
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: 'radial-gradient(circle at 1px 1px, #8b5cf6 1px, transparent 0)',
+          backgroundSize: '40px 40px',
+        }} />
+
+        {/* Animated Floating Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-purple-400 rounded-full"
+              animate={{
+                x: [0, 100, 0],
+                y: [0, -50, 0],
+                scale: [1, 1.5, 1],
+                opacity: [0.2, 0.5, 0.2],
+              }}
+              transition={{
+                repeat: Infinity,
+                duration: 10 + i * 2,
+                delay: i * 1.5,
+              }}
+              style={{
+                left: `${10 + i * 15}%`,
+                top: `${20 + i * 10}%`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -78,7 +131,7 @@ const EbookGenres = () => {
         }}
       />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -116,7 +169,7 @@ const EbookGenres = () => {
                 onClick={() => handleGenreClick(genre.name)}
               >
                 <div
-                  className={`bg-gradient-to-br ${genre.color} rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 text-white shadow-md hover:shadow-xl transition-all text-center`}
+                  className={`bg-gradient-to-br ${genre.color} rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 text-white shadow-md hover:shadow-xl transition-all text-center backdrop-blur-sm border border-white/20`}
                 >
                   <genre.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 mx-auto mb-2 sm:mb-2.5 md:mb-3" />
                   <span className="font-semibold text-xs sm:text-sm md:text-base">{genre.name}</span>
@@ -155,6 +208,9 @@ const EbookGenres = () => {
           </Link>
         </motion.div>
       </div>
+
+      {/* Bottom Decorative Element */}
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-purple-400/30 to-transparent" />
     </section>
   );
 };
