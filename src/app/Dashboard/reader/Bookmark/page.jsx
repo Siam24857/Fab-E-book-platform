@@ -293,7 +293,7 @@ export default function BookmarkPage() {
                                     layout
                                     exit="exit"
                                 >
-                                    <Link href={`/bookdetailspage/${bookmark.bookId}`} className="flex-1">
+                                    <Link href={`/bookdeattailspage/${bookmark.bookId}`} className="flex-1">
                                         <motion.div 
                                             className="relative overflow-hidden"
                                             whileHover={{ scale: 1.05 }}
