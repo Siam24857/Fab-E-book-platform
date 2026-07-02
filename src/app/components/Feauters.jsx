@@ -4,19 +4,52 @@ import Link from "next/link";
 import Image from "next/image";
 import toast, { Toaster } from 'react-hot-toast';
 import { getSafeBookAuthor, getSafeBookPrice, getSafeBookTitle, getSafeImageSrc } from "../lib/image-utils";
-import { motion } from "framer-motion";
 
 export default async function FeaturedEbooks() {
   const books = await Somebookdata();
 
   return (
     <section className="bg-[#f8f6f4] py-12 sm:py-16 md:py-20 relative overflow-hidden">
+      {/* CSS Animations as inline style */}
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @keyframes float-slow {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -20px) scale(1.05); }
+          }
+          @keyframes float-slower {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-20px, 30px) scale(1.05); }
+          }
+          @keyframes pulse-slow {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.05); }
+          }
+          @keyframes float-element {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            50% { transform: translate(100px, -50px) scale(1.5); opacity: 0.5; }
+          }
+          .animate-float-slow {
+            animation: float-slow 8s ease-in-out infinite;
+          }
+          .animate-float-slower {
+            animation: float-slower 10s ease-in-out infinite;
+          }
+          .animate-pulse-slow {
+            animation: pulse-slow 6s ease-in-out infinite;
+          }
+          .animate-float-element {
+            animation: float-element 12s ease-in-out infinite;
+          }
+        `
+      }} />
+
       {/* Premium Background Pattern */}
       <div className="absolute inset-0">
         {/* Main Gradient Orbs */}
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-purple-100/60 to-pink-100/40 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-gradient-to-tr from-blue-100/40 to-cyan-100/40 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-50/30 via-pink-50/30 to-blue-50/30 rounded-full blur-3xl" />
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-purple-100/60 to-pink-100/40 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-gradient-to-tr from-blue-100/40 to-cyan-100/40 rounded-full blur-3xl animate-float-slower" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-50/30 via-pink-50/30 to-blue-50/30 rounded-full blur-3xl animate-pulse-slow" />
         
         {/* Geometric Pattern */}
         <div className="absolute inset-0 opacity-[0.03]">
@@ -41,23 +74,14 @@ export default async function FeaturedEbooks() {
         {/* Animated Floating Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {[...Array(6)].map((_, i) => (
-            <motion.div
+            <div
               key={i}
-              className="absolute w-2 h-2 bg-purple-400 rounded-full"
-              animate={{
-                x: [0, 100, 0],
-                y: [0, -50, 0],
-                scale: [1, 1.5, 1],
-                opacity: [0.2, 0.5, 0.2],
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 10 + i * 2,
-                delay: i * 1.5,
-              }}
+              className="absolute w-2 h-2 bg-purple-400 rounded-full animate-float-element"
               style={{
                 left: `${10 + i * 15}%`,
                 top: `${20 + i * 10}%`,
+                animationDelay: `${i * 1.5}s`,
+                animationDuration: `${10 + i * 2}s`,
               }}
             />
           ))}
@@ -96,7 +120,7 @@ export default async function FeaturedEbooks() {
               Featured Ebooks
             </h2>
           </div>
-          <Link href="/browsersbooks" >
+          <Link href="/browsersbooks">
             <button className="flex items-center gap-1.5 sm:gap-2 text-base sm:text-lg font-medium hover:gap-2 sm:hover:gap-3 transition-all text-[#111827]">
               View All
               <ArrowRight size={18} className="sm:w-5 sm:h-5" />
@@ -158,7 +182,7 @@ export default async function FeaturedEbooks() {
 
         {/* Mobile View All Button */}
         <div className="mt-8 sm:mt-10 md:mt-12 text-center md:hidden">
-          <Link href="/browsersbooks"  >
+          <Link href="/browsersbooks">
             <button className="w-full sm:w-auto px-6 py-3 bg-[#111827] text-white rounded-lg font-medium hover:bg-[#1f2937] transition-colors">
               View All Ebooks
             </button>

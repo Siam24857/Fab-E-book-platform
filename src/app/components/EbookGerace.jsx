@@ -54,10 +54,7 @@ const EbookGenres = () => {
   };
 
   // Handle browse all genres click
-  const handleBrowseAll = () => {
-    toast.success('Loading all genres');
-  };
-
+  
   return (
     <section className="py-12 sm:py-16 md:py-20 relative overflow-hidden bg-white">
       {/* Premium Background Pattern - from HeroBanner */}
@@ -166,7 +163,7 @@ const EbookGenres = () => {
               <Link
                 href={`/browsersbooks?genre=${genre.name}`}
                 className="block"
-                onClick={() => handleGenreClick(genre.name)}
+                 
               >
                 <div
                   className={`bg-gradient-to-br ${genre.color} rounded-lg sm:rounded-xl p-4 sm:p-5 md:p-6 text-white shadow-md hover:shadow-xl transition-all text-center backdrop-blur-sm border border-white/20`}
@@ -189,7 +186,7 @@ const EbookGenres = () => {
           <Link
             href="/browsersbooks"
             className="text-indigo-600 hover:text-indigo-800 font-semibold inline-flex items-center text-sm sm:text-base"
-            onClick={handleBrowseAll}
+     
           >
             Browse All Genres
             <svg

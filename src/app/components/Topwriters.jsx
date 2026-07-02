@@ -37,10 +37,7 @@ export default function TopWriters() {
   }, []);
 
   // Handle writer card click
-  const handleWriterClick = (writerName) => {
-    toast.success(`Exploring ${writerName}'s profile`);
-  };
-
+ 
   // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -217,7 +214,7 @@ export default function TopWriters() {
                 initial="initial"
                 animate="animate"
                 className="cursor-pointer"
-                onClick={() => handleWriterClick(writer.name)}
+                
               >
                 <motion.div
                   variants={cardHoverVariants}

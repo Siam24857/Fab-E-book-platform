@@ -26,11 +26,14 @@ import toast, { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from "react";
 
 const HeroBanner = () => {
+  const [isMounted, setIsMounted] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
+    setIsMounted(true);
+    
+    // Only add event listeners on client
     const handleMouseMove = (e) => {
       setMousePosition({
         x: (e.clientX / window.innerWidth - 0.5) * 20,
@@ -38,16 +41,10 @@ const HeroBanner = () => {
       });
     };
     
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('scroll', handleScroll);
     
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('scroll', handleScroll);
     };
   }, []);
 
@@ -80,11 +77,6 @@ const HeroBanner = () => {
     { src: bookImages.fantasy, title: "Fantasy", rotate: 10, x: 90, y: 70, delay: 1.5, color: "from-orange-500/20 to-amber-500/20" },
   ];
 
-  const testimonials = [
-    { name: "Sarah Johnson", role: "Book Blogger", rating: 5, text: "Best platform for discovering new authors!" },
-    { name: "Michael Chen", role: "Author", rating: 5, text: "Fable transformed my writing career." },
-  ];
-
   const handleBrowseClick = (e) => {
     if (!e.target.closest('a')) {
       toast.success('📚 Loading amazing books for you...', {
@@ -115,6 +107,58 @@ const HeroBanner = () => {
     }
   };
 
+  // If not mounted, render static content without animations
+  if (!isMounted) {
+    return (
+      <section className="relative overflow-hidden min-h-[600px] md:min-h-[700px] lg:min-h-[800px] flex items-center bg-white">
+        <div className="absolute inset-0">
+          <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-purple-100/60 to-pink-100/40 rounded-full blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-gradient-to-tr from-blue-100/40 to-cyan-100/40 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-50/30 via-pink-50/30 to-blue-50/30 rounded-full blur-3xl" />
+        </div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="text-center lg:text-left">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6">
+                <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent">
+                  Discover & Read
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                  Original Ebooks
+                </span>
+              </h1>
+              <p className="text-base sm:text-lg md:text-xl text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                Join <span className="text-purple-600 font-bold">19,000+</span> readers and writers on Fable. 
+                Explore original ebooks, support emerging authors, and dive into captivating stories.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Link
+                  href="/browsersbooks"
+                  className="group relative inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white rounded-2xl font-semibold text-base"
+                  onClick={handleBrowseClick}
+                >
+                  <BookOpen className="mr-2 w-5 h-5" />
+                  Browse Ebooks
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+                <Link
+                  href="/Login"
+                  className="inline-flex items-center justify-center px-8 py-4 bg-white border-2 border-gray-200 text-gray-700 rounded-2xl font-semibold text-base"
+                  onClick={handleStartReading}
+                >
+                  <Zap className="mr-2 w-5 h-5 text-purple-400" />
+                  Start Reading
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Full animated version for client
   return (
     <section
       className="relative overflow-hidden min-h-[600px] md:min-h-[700px] lg:min-h-[800px] flex items-center bg-white"
@@ -386,7 +430,6 @@ const HeroBanner = () => {
                       fill
                       className="object-cover"
                     />
-                    {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                   </div>
                   <p className="text-xs font-semibold mt-2 text-center text-gray-700">{book.title}</p>
@@ -412,7 +455,6 @@ const HeroBanner = () => {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   
-                  {/* Book Details Overlay */}
                   <div className="absolute bottom-4 left-4 right-4">
                     <div className="flex items-center gap-1 mb-1">
                       <span className="px-2 py-0.5 bg-purple-500/80 backdrop-blur-sm text-white text-[10px] font-semibold rounded-full">
@@ -432,7 +474,6 @@ const HeroBanner = () => {
                   </div>
                 </div>
 
-                {/* Quick Action Buttons */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
